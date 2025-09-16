@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 export const dbConfig = {
-  type: process.env.DB_TYPE,
+  type: process.env.DB_TYPE || 'sqlite',
   host: process.env.DB_HOST || 'localhost',
   port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 3306,
   username: process.env.DB_USERNAME,
