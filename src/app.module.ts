@@ -1,10 +1,25 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
-@Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
-})
+import { AppDataSource } from './config/database';
+import { ConnectionTypeEnum } from './utils/database';
+
+import { UserModule } from './modules/user/user.module';
+import { EventModule } from './modules/event/event.module';
+import { AuthModule } from './modules/auth/auth.module';
+
+const imports = [
+  TypeOrmModule.forRootAsync({
+    useFactory: () => AppDataSource.options,
+  }),
+  TypeOrmModule.forRootAsync({
+    name: ConnectionTypeEnum.READONLY,
+    useFactory: () => AppDataSource.options,
+  }),
+  AuthModule,
+  UserModule,
+  EventModule,
+];
+
+@Module({ imports })
 export class AppModule {}
