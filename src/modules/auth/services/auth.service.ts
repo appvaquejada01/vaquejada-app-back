@@ -1,26 +1,52 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+import { DataSource } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '../../../entities/user.entity';
+import { Injectable } from '@nestjs/common';
+import { InjectDataSource } from '@nestjs/typeorm';
+
+import { User } from 'src/entities';
+import { ConnectionTypeEnum } from 'src/utils/database';
+
+import { InvalidCredentialsException } from '../exceptions';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly userService: UserService,
+    @InjectDataSource(ConnectionTypeEnum.READONLY)
+    private readonly dataSource: DataSource,
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<User | null> {
-    const user = await this.userService.findByEmail(email);
-    if (user && user.password === password) {
-      return user;
-    }
-    return null;
-  }
+  async login(email: string, password: string) {
+    const user = await this.validateUser(email, password);
 
-  async login(user: User) {
+    if (!user) {
+      throw new InvalidCredentialsException();
+    }
+
     const payload = { sub: user.id, email: user.email };
     return {
       access_token: this.jwtService.sign(payload),
     };
+  }
+
+  async validateUser(email: string, password: string): Promise<User | null> {
+    const user = await this.dataSource
+      .createQueryBuilder(User, 'user')
+      .select(['user.id', 'user.email', 'user.password'])
+      .where('user.email = :email', { email })
+      .getOne();
+
+    const isPasswordValid = this.validatePassword(password, user!.password);
+
+    if (user && isPasswordValid) {
+      return user;
+    }
+
+    return null;
+  }
+
+  private validatePassword(password: string, userPassword: string) {
+    return bcrypt.compareSync(password, userPassword);
   }
 }
