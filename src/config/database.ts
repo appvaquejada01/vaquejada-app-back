@@ -2,7 +2,7 @@ import { DataSource } from 'typeorm';
 import { dbConfig } from './env';
 
 export const AppDataSource = new DataSource({
-  type: 'mysql',
+  type: 'postgres',
   host: dbConfig.host,
   port: dbConfig.port,
   username: dbConfig.username,
@@ -17,7 +17,7 @@ export const AppDataSource = new DataSource({
 export const connectDatabase = async () => {
   try {
     await AppDataSource.initialize();
-    console.log('✅ Conectado ao MySQL com TypeORM');
+    console.log('✅ Conectado ao Postgres com TypeORM');
     return AppDataSource;
   } catch (error: unknown) {
     if (error instanceof Error) {

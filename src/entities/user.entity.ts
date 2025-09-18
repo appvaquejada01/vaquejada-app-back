@@ -1,24 +1,18 @@
-import {
-  Column,
-  Entity,
-  OneToMany,
-  CreateDateColumn,
-  UpdateDateColumn,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Event } from './event.entity';
 import { UserNatureEnum, UserRoleEnum } from '../modules/user/enums';
+import { AuditableAttributesWithTimeZone } from 'src/shared/entities';
 
 @Entity('users')
-export class User {
+export class User extends AuditableAttributesWithTimeZone {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ type: 'varchar', length: 100 })
   name: string;
 
-  @Column({ type: 'varchar', nullable: false })
+  @Column({ type: 'varchar', nullable: true })
   nature: UserNatureEnum;
 
   @Column({ type: 'varchar', nullable: false, unique: true, length: 100 })
@@ -44,12 +38,6 @@ export class User {
 
   @Column({ type: 'boolean', default: true, name: 'is_active' })
   isActive: boolean;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 
   @OneToMany(() => Event, (event) => event.organizer)
   events: Event[];

@@ -4,15 +4,14 @@ import {
   ManyToOne,
   JoinTable,
   ManyToMany,
-  CreateDateColumn,
-  UpdateDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './user.entity';
 import { EventStatusEnum } from '../modules/event/enums';
+import { AuditableAttributesWithTimeZone } from 'src/shared/entities';
 
 @Entity('events')
-export class Event {
+export class Event extends AuditableAttributesWithTimeZone {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -52,12 +51,6 @@ export class Event {
 
   @Column({ type: 'boolean', default: true, name: 'is_active' })
   isActive: boolean;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.events)
   organizer: User;
