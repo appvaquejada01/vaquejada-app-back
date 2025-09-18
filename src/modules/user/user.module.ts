@@ -6,6 +6,8 @@ import {
 } from '../../utils/database';
 
 import { User } from '../../entities';
+import { UserController } from './controllers';
+import { CreateUserService } from './services';
 
 const typeOrmEntities = [User];
 
@@ -14,8 +16,8 @@ const typeOrmEntities = [User];
     typeOrmForFeatureToConnection(typeOrmEntities, ConnectionTypeEnum.DEFAULT),
     typeOrmForFeatureToConnection(typeOrmEntities, ConnectionTypeEnum.READONLY),
   ],
-  controllers: [],
-  providers: [],
+  controllers: [UserController],
+  providers: [CreateUserService],
   exports: [],
 })
 export class UserModule {}
