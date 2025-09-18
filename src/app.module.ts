@@ -7,6 +7,7 @@ import { ConnectionTypeEnum } from './utils/database';
 import { UserModule } from './modules/user/user.module';
 import { EventModule } from './modules/event/event.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { CategoryModule } from './modules/category/category.module';
 
 const imports = [
   TypeOrmModule.forRootAsync({
@@ -19,6 +20,7 @@ const imports = [
   AuthModule,
   UserModule,
   EventModule,
+  CategoryModule,
 ];
 
 @Module({ imports })

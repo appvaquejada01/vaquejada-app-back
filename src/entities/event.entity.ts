@@ -6,9 +6,12 @@ import {
   ManyToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from './user.entity';
+
 import { EventStatusEnum } from '../modules/event/enums';
 import { AuditableAttributesWithTimeZone } from 'src/shared/entities';
+
+import { User } from './user.entity';
+import { Category } from './category.entity';
 
 @Entity('events')
 export class Event extends AuditableAttributesWithTimeZone {
@@ -18,13 +21,13 @@ export class Event extends AuditableAttributesWithTimeZone {
   @Column({ type: 'varchar', length: 200 })
   name: string;
 
-  @Column({ type: 'date' })
+  @Column({ type: 'timestamptz' })
   startAt: string;
 
-  @Column({ type: 'date' })
+  @Column({ type: 'timestamptz' })
   endAt: string;
 
-  @Column({ type: 'date' })
+  @Column({ type: 'timestamptz' })
   purchaseClosedAt: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
@@ -36,12 +39,14 @@ export class Event extends AuditableAttributesWithTimeZone {
   @Column({ type: 'varchar', length: 50, nullable: false })
   status: EventStatusEnum;
 
-  @Column({ type: 'json', nullable: true })
-  location: {
-    address?: string;
-    city?: string;
-    state?: string;
-  };
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  address: string;
+
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  city: string;
+
+  @Column({ type: 'varchar', length: 2, nullable: true })
+  state: string;
 
   @Column({ type: 'varchar', length: 1000 })
   description: string;
@@ -66,4 +71,8 @@ export class Event extends AuditableAttributesWithTimeZone {
   @ManyToMany(() => User, (user) => user.events)
   @JoinTable()
   speakers: User[];
+
+  @ManyToMany(() => Category, (category) => category.events)
+  @JoinTable()
+  categories: Category[];
 }
