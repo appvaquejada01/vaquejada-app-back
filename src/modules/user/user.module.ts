@@ -3,11 +3,11 @@ import { Module } from '@nestjs/common';
 import {
   ConnectionTypeEnum,
   typeOrmForFeatureToConnection,
-} from '../../utils/database';
+} from 'src/utils/database';
 
 import { User } from '../../entities';
 import { UserController } from './controllers';
-import { CreateUserService } from './services';
+import { CreateUserService, UpdateUserService } from './services';
 
 const typeOrmEntities = [User];
 
@@ -17,7 +17,7 @@ const typeOrmEntities = [User];
     typeOrmForFeatureToConnection(typeOrmEntities, ConnectionTypeEnum.READONLY),
   ],
   controllers: [UserController],
-  providers: [CreateUserService],
+  providers: [CreateUserService, UpdateUserService],
   exports: [],
 })
 export class UserModule {}
