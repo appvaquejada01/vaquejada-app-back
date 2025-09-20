@@ -5,16 +5,13 @@ import {
   typeOrmForFeatureToConnection,
 } from 'src/utils/database';
 
-import {
-  GetUserService,
-  ListUserService,
-  UpdateUserService,
-  CreateUserService,
-} from './services';
 import { User } from '../../entities';
+import * as Services from './services';
 import { UserController } from './controllers';
 
 const typeOrmEntities = [User];
+
+const services = Object.values(Services);
 
 @Module({
   imports: [
@@ -22,12 +19,7 @@ const typeOrmEntities = [User];
     typeOrmForFeatureToConnection(typeOrmEntities, ConnectionTypeEnum.READONLY),
   ],
   controllers: [UserController],
-  providers: [
-    CreateUserService,
-    UpdateUserService,
-    GetUserService,
-    ListUserService,
-  ],
+  providers: [...services],
   exports: [],
 })
 export class UserModule {}
