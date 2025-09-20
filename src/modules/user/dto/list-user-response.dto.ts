@@ -3,11 +3,11 @@ import { UserNatureEnum, UserRoleEnum } from '../enums';
 
 export class ListUserResponseDto {
   id: string;
+  cpf: string;
   email: string;
   name: string;
-  cpf: string;
-  nature: UserNatureEnum;
   role: UserRoleEnum;
+  nature: UserNatureEnum;
   phone: string;
   city: string;
   state: string;
