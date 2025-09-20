@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 
 import { EventStatusEnum } from '../modules/event/enums';
-import { AuditableAttributesWithTimeZone } from 'src/shared/entities';
+import { AuditableAttributesWithTimeZone } from '../shared/entities/auditable.entity';
 
 import { User } from './user.entity';
 import { Category } from './category.entity';
@@ -56,6 +56,8 @@ export class Event extends AuditableAttributesWithTimeZone {
 
   @Column({ type: 'boolean', default: true, name: 'is_active' })
   isActive: boolean;
+
+  organizerId: string;
 
   @ManyToOne(() => User, (user) => user.events)
   organizer: User;
