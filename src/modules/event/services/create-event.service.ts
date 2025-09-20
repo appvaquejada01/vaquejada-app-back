@@ -21,8 +21,6 @@ export class CreateEventService {
   async create(dto: CreateEventDto): Promise<CreateEventResponseDto> {
     const event = await this.createEvent(dto);
 
-    console.log(event);
-    console.log(dto);
     await Promise.all([
       this.relateJudges(event.id, dto.judgeIds),
       this.relateSpeakers(event.id, dto.speakerIds),

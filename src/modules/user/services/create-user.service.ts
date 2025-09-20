@@ -57,9 +57,9 @@ export class CreateUserService {
       await this.dataSource.query(
         `
       INSERT 
-        INTO "users" (name, email, password, cpf, "createdFunctionName")
+        INTO "users" (name, email, password, cpf, "createdAt", "createdFunctionName")
       VALUES 
-        ($1, $2, $3, $4, $5)
+        ($1, $2, $3, $4, NOW(), $5)
       RETURNING *;`,
         [
           dto.name,
