@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn, ManyToMany } from 'typeorm';
 
-import { CategoryNameEnum } from 'src/modules/category/enums';
-import { AuditableAttributesWithTimeZone } from 'src/shared/entities';
+import { CategoryNameEnum } from '../modules/category/enums/category-name.enum';
+import { AuditableAttributesWithTimeZone } from '../shared/entities/auditable.entity';
 
 import { Event } from './event.entity';
 

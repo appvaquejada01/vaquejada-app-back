@@ -2,7 +2,7 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Event } from './event.entity';
 import { UserNatureEnum, UserRoleEnum } from '../modules/user/enums';
-import { AuditableAttributesWithTimeZone } from 'src/shared/entities';
+import { AuditableAttributesWithTimeZone } from '../shared/entities/auditable.entity';
 
 @Entity('users')
 export class User extends AuditableAttributesWithTimeZone {
