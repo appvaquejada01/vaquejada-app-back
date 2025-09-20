@@ -9,6 +9,7 @@ export class GetEventResponseDto {
   address: string;
   city: string;
   state: string;
+  purchaseClosedAt: string;
 
   static fromEntity(event: Event): GetEventResponseDto {
     return {
@@ -20,6 +21,7 @@ export class GetEventResponseDto {
       address: event.address,
       city: event.city,
       state: event.state,
+      purchaseClosedAt: event.purchaseClosedAt,
     };
   }
 }

@@ -14,10 +14,10 @@ export class GetEventService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async getById(id: string): Promise<GetEventResponseDto> {
+  async getById(eventId: string): Promise<GetEventResponseDto> {
     const event = await this.dataSource
       .getRepository(Event)
-      .findOne({ where: { id } });
+      .findOne({ where: { id: eventId } });
 
     if (!event) throw new NotFoundException('Evento não encontrado');
 

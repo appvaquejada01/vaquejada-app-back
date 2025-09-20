@@ -1,4 +1,4 @@
-import { DataSource } from 'typeorm';
+import { DataSource, SelectQueryBuilder } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 
@@ -15,18 +15,44 @@ export class ListEventService {
   ) {}
 
   async list(query: QueryListEventDto): Promise<ListEventResponseDto[]> {
-    const qb = this.dataSource.createQueryBuilder(Event, 'event');
-
-    if (query.name) {
-      qb.andWhere('event.name ILIKE :name', { name: `%${query.name}%` });
-    }
-
-    if (query.date) {
-      qb.andWhere('event.startAt::date = :date', { date: query.date });
-    }
+    const qb = this.createQueryBuilder();
+    this.mapFilters(qb, query);
 
     const events = await qb.getMany();
 
     return events.map(ListEventResponseDto.fromEntity);
+  }
+
+  private createQueryBuilder(): SelectQueryBuilder<Event> {
+    return this.dataSource
+      .createQueryBuilder(Event, 'event')
+      .select([
+        'event.id',
+        'event.name',
+        'event.startAt',
+        'event.endAt',
+        'event.status',
+        'event.address',
+        'event.city',
+        'event.state',
+        'event.purchaseClosedAt',
+      ]);
+  }
+
+  private mapFilters(
+    qb: SelectQueryBuilder<Event>,
+    query: QueryListEventDto,
+  ): SelectQueryBuilder<Event> {
+    const { name, date } = query;
+
+    if (name) {
+      qb.andWhere('event.name ILIKE :name', { name: `%${name}%` });
+    }
+
+    if (date) {
+      qb.andWhere('DATE(event.date) = :date', { date: date });
+    }
+
+    return qb;
   }
 }
