@@ -1,14 +1,18 @@
 import {
+  Put,
   Get,
   Post,
   Body,
   Param,
+  Query,
   UseGuards,
   Controller,
   ParseUUIDPipe,
 } from '@nestjs/common';
 
 import { JwtAuthGuard } from 'src/shared/guards';
+import { RequestUser } from 'src/shared/decorators';
+import { AuthenticatedUser } from 'src/shared/types/routes';
 
 import {
   CreateEventDto,
@@ -16,11 +20,13 @@ import {
   GetEventResponseDto,
   ListEventResponseDto,
   CreateEventResponseDto,
+  UpdateEventDto,
 } from '../dto';
 import {
   GetEventService,
   ListEventService,
   CreateEventService,
+  UpdateEventService,
 } from '../services';
 
 @Controller('events')
@@ -30,6 +36,7 @@ export class EventController {
     private readonly createEventService: CreateEventService,
     private readonly listEventService: ListEventService,
     private readonly getEventService: GetEventService,
+    private readonly updateEventService: UpdateEventService,
   ) {}
 
   @Post()
@@ -39,9 +46,18 @@ export class EventController {
     return this.createEventService.create(dto);
   }
 
+  @Put(':eventId')
+  async updateEvent(
+    @RequestUser() requestUser: AuthenticatedUser,
+    @Param('eventId', new ParseUUIDPipe({ version: '4' })) eventId: string,
+    @Body() dto: UpdateEventDto,
+  ): Promise<UpdateEventDto> {
+    return this.updateEventService.update(eventId, dto, requestUser.id);
+  }
+
   @Get()
   async listEvents(
-    @Body() query: QueryListEventDto,
+    @Query() query: QueryListEventDto,
   ): Promise<ListEventResponseDto[]> {
     return this.listEventService.list(query);
   }
