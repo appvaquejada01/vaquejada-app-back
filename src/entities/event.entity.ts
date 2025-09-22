@@ -2,6 +2,7 @@ import {
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
@@ -10,8 +11,11 @@ import {
 import { EventStatusEnum } from '../modules/event/enums';
 import { AuditableAttributesWithTimeZone } from '../shared/entities/auditable.entity';
 
+import { Run } from './run.entity';
 import { User } from './user.entity';
-import { Category } from './category.entity';
+import { RunPurchase } from './run-purchase.entity';
+import { RunCategory } from './run-category.entity';
+import { EventCategory } from './event-category.entity';
 
 @Entity('events')
 export class Event extends AuditableAttributesWithTimeZone {
@@ -29,12 +33,6 @@ export class Event extends AuditableAttributesWithTimeZone {
 
   @Column({ type: 'timestamptz' })
   purchaseClosedAt: string;
-
-  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
-  inscriptionPrice: number;
-
-  @Column({ type: 'int', nullable: false })
-  inscriptionLimit: number;
 
   @Column({ type: 'varchar', length: 50, nullable: false })
   status: EventStatusEnum;
@@ -57,24 +55,64 @@ export class Event extends AuditableAttributesWithTimeZone {
   @Column({ type: 'boolean', default: true, name: 'is_active' })
   isActive: boolean;
 
-  organizerId: string;
+  @Column({ type: 'boolean', default: false })
+  isPublic: boolean; // ADD: Se o evento é público para visualização
 
-  @ManyToOne(() => User, (user) => user.events)
+  // RELAÇÃO COM ORGANIZADOR
+  @ManyToOne(() => User, (user) => user.organizedEvents)
   organizer: User;
 
-  @ManyToMany(() => User, (user) => user.events)
-  @JoinTable()
+  @Column() // ADD: organizerId deve ser uma coluna separada
+  organizerId: string;
+
+  // RELAÇÕES N:N EXISTENTES (ajustar os nomes)
+  @ManyToMany(() => User, (user) => user.eventsAsRunner)
+  @JoinTable({
+    name: 'event_runners',
+    joinColumn: { name: 'event_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'user_id', referencedColumnName: 'id' },
+  })
   runners: User[];
 
-  @ManyToMany(() => User, (user) => user.events)
-  @JoinTable()
+  @ManyToMany(() => User, (user) => user.eventsAsJudge)
+  @JoinTable({
+    name: 'event_judges',
+    joinColumn: { name: 'event_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'user_id', referencedColumnName: 'id' },
+  })
   judges: User[];
 
-  @ManyToMany(() => User, (user) => user.events)
-  @JoinTable()
+  @ManyToMany(() => User, (user) => user.eventsAsSpeaker)
+  @JoinTable({
+    name: 'event_speakers',
+    joinColumn: { name: 'event_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'user_id', referencedColumnName: 'id' },
+  })
   speakers: User[];
 
-  @ManyToMany(() => Category, (category) => category.events)
-  @JoinTable()
-  categories: Category[];
+  @OneToMany(() => RunPurchase, (runPurchase) => runPurchase.event)
+  runPurchases: RunPurchase[];
+
+  @OneToMany(() => Run, (run) => run.event)
+  runs: Run[];
+
+  @OneToMany(() => RunCategory, (runCategory) => runCategory.event)
+  runCategories: RunCategory[];
+
+  @OneToMany(() => EventCategory, (eventCategory) => eventCategory.event)
+  eventCategories: EventCategory[];
+
+  // @OneToMany(() => Score, (score) => score.event)
+  // scores: Score[];
+
+  canPurchaseRuns(): boolean {
+    return (
+      new Date() < new Date(this.purchaseClosedAt) &&
+      this.status === EventStatusEnum.SCHEDULED
+    );
+  }
+
+  isLive(): boolean {
+    return this.status === EventStatusEnum.LIVE;
+  }
 }

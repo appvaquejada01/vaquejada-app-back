@@ -1,6 +1,14 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { Event } from './event.entity';
+import { RunPurchase } from './run-purchase.entity';
 import { UserNatureEnum, UserRoleEnum } from '../modules/user/enums';
 import { AuditableAttributesWithTimeZone } from '../shared/entities/auditable.entity';
 
@@ -40,5 +48,39 @@ export class User extends AuditableAttributesWithTimeZone {
   isActive: boolean;
 
   @OneToMany(() => Event, (event) => event.organizer)
-  events: Event[];
+  organizedEvents: Event[];
+
+  @OneToMany(() => RunPurchase, (runPurchase) => runPurchase.user)
+  runPurchases: RunPurchase[];
+
+  // RELAÇÃO COM SCORES (como juiz)
+  // @OneToMany(() => Score, (score) => score.judge)
+  // scoresGiven: Score[];
+
+  // RELAÇÃO COM EVENTOS COMO CORREDOR (N:N)
+  @ManyToMany(() => Event, (event) => event.runners)
+  @JoinTable({
+    name: 'event_runners',
+    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'event_id', referencedColumnName: 'id' },
+  })
+  eventsAsRunner: Event[];
+
+  // RELAÇÃO COM EVENTOS COMO JUIZ (N:N)
+  @ManyToMany(() => Event, (event) => event.judges)
+  @JoinTable({
+    name: 'event_judges',
+    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'event_id', referencedColumnName: 'id' },
+  })
+  eventsAsJudge: Event[];
+
+  // RELAÇÃO COM EVENTOS COMO LOCUTOR (N:N)
+  @ManyToMany(() => Event, (event) => event.speakers)
+  @JoinTable({
+    name: 'event_speakers',
+    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'event_id', referencedColumnName: 'id' },
+  })
+  eventsAsSpeaker: Event[];
 }
