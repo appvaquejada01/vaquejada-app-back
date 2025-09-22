@@ -1,86 +1,146 @@
-import { DataSource } from 'typeorm';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
-import { Event } from 'src/entities/event.entity';
-import { ConnectionTypeEnum } from 'src/utils/database';
+import { Event, User } from 'src/entities';
+import { UserRoleEnum } from 'src/modules/user/enums';
 import { UpdateQueryResponse } from 'src/shared/types/typeorm';
 
-import { UpdateEventDto } from '../dto';
+import { UpdateEventDto, EventResponseDto } from '../dto';
 
 @Injectable()
 export class UpdateEventService {
   constructor(
-    @InjectDataSource(ConnectionTypeEnum.DEFAULT)
-    private readonly dataSource: DataSource,
+    @InjectRepository(Event)
+    private readonly eventRepository: Repository<Event>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async update(
-    eventId: string,
-    dto: UpdateEventDto,
+    id: string,
+    updateEventDto: UpdateEventDto,
     userId: string,
-  ): Promise<UpdateEventDto> {
-    const event = await this.findEventById(eventId);
+  ): Promise<EventResponseDto> {
+    const event = await this.eventRepository.findOne({
+      where: { id },
+      relations: ['organizer'],
+    });
 
-    const updatedEvent = await this.updateEvent(event.id, dto, userId);
+    if (!event) {
+      throw new NotFoundException(`Evento com ID ${id} não encontrado`);
+    }
 
-    return UpdateEventDto.fromEntity(updatedEvent);
+    // Verificar permissões
+    await this.checkEventPermission(event, userId);
+
+    // Validar datas
+    if (updateEventDto.startAt && updateEventDto.endAt) {
+      this.validateEventDates(updateEventDto.startAt, updateEventDto.endAt);
+    }
+
+    const updatedEvent = await this.updateEvent(
+      event.id,
+      updateEventDto,
+      userId,
+    );
+
+    return EventResponseDto.fromEntity(updatedEvent);
   }
 
-  private async findEventById(eventId: string): Promise<Event> {
-    const event = await this.dataSource
-      .createQueryBuilder(Event, 'event')
-      .where('event.id = :eventId', { eventId })
+  private async checkEventPermission(
+    event: Event,
+    userId: string,
+  ): Promise<void> {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .select(['user.id', 'user.role'])
+      .where('user.id = :userId', { userId })
       .getOne();
 
-    if (!event) throw new NotFoundException('Evento não encontrado');
+    if (user!.role === UserRoleEnum.ADMIN) {
+      return;
+    }
 
-    return event;
+    if (user!.role === UserRoleEnum.ORGANIZER && event.organizerId !== userId) {
+      throw new ForbiddenException('Você só pode editar seus próprios eventos');
+    }
+
+    if (![UserRoleEnum.ADMIN, UserRoleEnum.ORGANIZER].includes(user!.role)) {
+      throw new ForbiddenException('Acesso negado para editar eventos');
+    }
+  }
+
+  private validateEventDates(startAt: string, endAt: string): void {
+    const startDate = new Date(startAt);
+    const endDate = new Date(endAt);
+
+    if (startDate >= endDate) {
+      throw new BadRequestException(
+        'Data de início deve ser anterior à data de término',
+      );
+    }
+
+    if (startDate < new Date()) {
+      throw new BadRequestException('Data de início não pode ser no passado');
+    }
   }
 
   private async updateEvent(
-    eventId: string,
-    dto: UpdateEventDto,
+    id: string,
+    updateEventDto: UpdateEventDto,
     userId: string,
   ): Promise<Event> {
-    const [[updatedEvent]]: UpdateQueryResponse<Event> =
-      await this.dataSource.query(
+    const [[updateResult]]: UpdateQueryResponse<Event> =
+      await this.eventRepository.query(
         `
       UPDATE 
-        "events" 
-      SET
+        event
+      SET 
         name = $1,
         "startAt" = $2,
         "endAt" = $3,
         "purchaseClosedAt" = $4,
-        "inscriptionPrice" = $5,
-        "inscriptionLimit" = $6,
-        status = $7,
-        address = $8,
-        city = $9,
-        state = $10,
-        "updateUserId" = $11,
+        status = $5,
+        address = $6,
+        city = $7,
+        state = $8,
+        description = $9,
+        "bannerUrl" = $10,
+        "isActive" = $11,
+        "isPublic" = $12,
         "updatedAt" = NOW(),
-        "updatedFunctionName" = 'UpdateEventService.updateEvent'
-      WHERE
-        id = $12
+        "updatedUserId" = $13
+      WHERE 
+        id = $14 
       RETURNING *`,
         [
-          dto.name,
-          dto.startAt,
-          dto.endAt,
-          dto.purchaseClosedAt,
-          dto.inscriptionPrice,
-          dto.inscriptionLimit,
-          dto.status,
-          dto.address,
-          dto.city,
-          dto.state,
+          updateEventDto.name,
+          updateEventDto.startAt,
+          updateEventDto.endAt,
+          updateEventDto.purchaseClosedAt,
+          updateEventDto.status,
+          updateEventDto.address || null,
+          updateEventDto.city || null,
+          updateEventDto.state || null,
+          updateEventDto.description,
+          updateEventDto.bannerUrl || null,
+          updateEventDto.isActive !== undefined
+            ? updateEventDto.isActive
+            : true,
+          updateEventDto.isPublic !== undefined
+            ? updateEventDto.isPublic
+            : false,
           userId,
-          eventId,
+          id,
         ],
       );
 
-    return updatedEvent;
+    return updateResult;
   }
 }

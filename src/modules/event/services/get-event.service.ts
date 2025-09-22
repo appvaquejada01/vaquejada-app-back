@@ -1,26 +1,28 @@
-import { DataSource } from 'typeorm';
-import { InjectDataSource } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { Event } from 'src/entities/event.entity';
-import { ConnectionTypeEnum } from 'src/utils/database';
 
-import { GetEventResponseDto } from '../dto';
+import { EventResponseDto } from '../dto/event-response.dto';
 
 @Injectable()
 export class GetEventService {
   constructor(
-    @InjectDataSource(ConnectionTypeEnum.DEFAULT)
-    private readonly dataSource: DataSource,
+    @InjectRepository(Event)
+    private readonly eventRepository: Repository<Event>,
   ) {}
 
-  async getById(eventId: string): Promise<GetEventResponseDto> {
-    const event = await this.dataSource
-      .getRepository(Event)
-      .findOne({ where: { id: eventId } });
+  async findOne(id: string): Promise<EventResponseDto> {
+    const event = await this.eventRepository.findOne({
+      where: { id },
+      relations: ['organizer', 'runners', 'judges', 'speakers'],
+    });
 
-    if (!event) throw new NotFoundException('Evento não encontrado');
+    if (!event) {
+      throw new NotFoundException(`Evento com ID ${id} não encontrado`);
+    }
 
-    return GetEventResponseDto.fromEntity(event);
+    return EventResponseDto.fromEntity(event);
   }
 }
