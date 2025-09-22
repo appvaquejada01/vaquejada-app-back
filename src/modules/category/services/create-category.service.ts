@@ -14,10 +14,13 @@ export class CreateCategoryService {
     private readonly categoryRepository: Repository<Category>,
   ) {}
 
-  async create(dto: CreateCategoryDto): Promise<CreateCategoryResponseDto> {
+  async create(
+    dto: CreateCategoryDto,
+    userId: string,
+  ): Promise<CreateCategoryResponseDto> {
     await this.checkExistingCategory(dto.name);
 
-    const savedCategory = await this.insertCategory(dto);
+    const savedCategory = await this.insertCategory(dto, userId);
 
     return CreateCategoryResponseDto.fromEntity(savedCategory);
   }
@@ -35,17 +38,20 @@ export class CreateCategoryService {
     }
   }
 
-  private async insertCategory(dto: CreateCategoryDto): Promise<Category> {
+  private async insertCategory(
+    dto: CreateCategoryDto,
+    userId: string,
+  ): Promise<Category> {
     const [category]: InsertQueryResponse<Category> =
       await this.categoryRepository.query(
         `
       INSERT INTO 
         category 
-        (name, description, rules)
+        ("createdAt", "createdUserId",name, description, rules)
       VALUES 
-        ($1, $2, $3)
+        (NOW(), $1, $2, $3, $4)
       RETURNING *;`,
-        [dto.name, dto.description, dto.rules],
+        [userId, dto.name, dto.description, dto.rules],
       );
 
     return category;

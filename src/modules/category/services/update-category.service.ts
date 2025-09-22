@@ -21,6 +21,7 @@ export class UpdateCategoryService {
   async update(
     id: string,
     updateCategoryDto: UpdateCategoryDto,
+    userId: string,
   ): Promise<CategoryResponseDto> {
     const category = await this.categoryRepository.findOne({
       where: { id },
@@ -36,7 +37,11 @@ export class UpdateCategoryService {
     }
 
     // Atualizar apenas os campos fornecidos
-    const updatedCategory = await this.updateCategory(id, updateCategoryDto);
+    const updatedCategory = await this.updateCategory(
+      id,
+      updateCategoryDto,
+      userId,
+    );
 
     return CategoryResponseDto.fromEntity(updatedCategory);
   }
@@ -65,6 +70,7 @@ export class UpdateCategoryService {
   private async updateCategory(
     id: string,
     updateCategoryDto: UpdateCategoryDto,
+    userId: string,
   ): Promise<Category> {
     const { name, description } = updateCategoryDto;
 
@@ -74,12 +80,14 @@ export class UpdateCategoryService {
       UPDATE 
         category
       SET
+        "updatedAt" = NOW(),
+        "updatedUserId" = $4,
         name = COALESCE($1, name),
         description = COALESCE($2, description)
       WHERE 
         id = $3
       RETURNING *`,
-        [name ?? null, description ?? null, id],
+        [name ?? null, description ?? null, id, userId],
       );
 
     if (!result[0]) {

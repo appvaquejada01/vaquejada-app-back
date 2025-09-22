@@ -34,6 +34,8 @@ import {
   UpdateCategoryService,
   CreateCategoryService,
 } from '../services';
+import { RequestUser } from 'src/shared/decorators';
+import { AuthenticatedUser } from 'src/shared/types/routes';
 
 @ApiTags('categories')
 @ApiBearerAuth()
@@ -52,8 +54,9 @@ export class CategoryController {
   @CategoryCreateDocumentation()
   async create(
     @Body() createCategoryDto: CreateCategoryDto,
+    @RequestUser() user: AuthenticatedUser,
   ): Promise<CreateCategoryResponseDto> {
-    return this.createCategoryService.create(createCategoryDto);
+    return this.createCategoryService.create(createCategoryDto, user.id);
   }
 
   @Get()
@@ -79,7 +82,8 @@ export class CategoryController {
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
+    @RequestUser() user: AuthenticatedUser,
   ): Promise<CategoryResponseDto> {
-    return this.updateCategoryService.update(id, updateCategoryDto);
+    return this.updateCategoryService.update(id, updateCategoryDto, user.id);
   }
 }

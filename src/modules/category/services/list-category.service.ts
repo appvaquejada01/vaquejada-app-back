@@ -26,11 +26,7 @@ export class ListCategoryService {
       CategoryResponseDto.fromEntity(category),
     );
 
-    const meta = this.buildMeta(
-      totalCategories,
-      categoriesDto.length,
-      paginationDto,
-    );
+    const meta = this.buildMeta(totalCategories, paginationDto);
 
     return { data: categoriesDto, meta };
   }
@@ -94,11 +90,7 @@ export class ListCategoryService {
     return await queryBuilder.limit(Number(limit)).offset(offset).getMany();
   }
 
-  private buildMeta(
-    totalItems: number,
-    itemCount: number,
-    paginationDto: PaginationDto,
-  ) {
+  private buildMeta(totalItems: number, paginationDto: PaginationDto) {
     const { limit = 10, page = 1 } = paginationDto;
     const totalPages = Math.ceil(totalItems / limit);
 

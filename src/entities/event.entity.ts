@@ -56,7 +56,7 @@ export class Event extends AuditableAttributesWithTimeZone {
   isActive: boolean;
 
   @Column({ type: 'boolean', default: false })
-  isPublic: boolean; // ADD: Se o evento é público para visualização
+  isPublic: boolean;
 
   // RELAÇÃO COM ORGANIZADOR
   @ManyToOne(() => User, (user) => user.organizedEvents)
