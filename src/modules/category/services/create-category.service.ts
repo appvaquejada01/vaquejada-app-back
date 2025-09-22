@@ -1,9 +1,8 @@
-import { DataSource } from 'typeorm';
-import { Injectable } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable, ConflictException } from '@nestjs/common';
 
-import { Category } from 'src/entities/category.entity';
-import { ConnectionTypeEnum } from 'src/utils/database';
+import { Category } from 'src/entities';
 import { InsertQueryResponse } from 'src/shared/types/typeorm';
 
 import { CreateCategoryDto, CreateCategoryResponseDto } from '../dto';
@@ -11,41 +10,42 @@ import { CreateCategoryDto, CreateCategoryResponseDto } from '../dto';
 @Injectable()
 export class CreateCategoryService {
   constructor(
-    @InjectDataSource(ConnectionTypeEnum.DEFAULT)
-    private readonly dataSource: DataSource,
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
   ) {}
 
   async create(dto: CreateCategoryDto): Promise<CreateCategoryResponseDto> {
-    const category = await this.insertCategory(dto);
+    await this.checkExistingCategory(dto.name);
 
-    return CreateCategoryResponseDto.fromEntity(category);
+    const savedCategory = await this.insertCategory(dto);
+
+    return CreateCategoryResponseDto.fromEntity(savedCategory);
+  }
+
+  private async checkExistingCategory(name: string): Promise<void> {
+    const existingCategory = await this.categoryRepository
+      .createQueryBuilder('category')
+      .where('LOWER(category.name) = LOWER(:name)', { name })
+      .getOne();
+
+    if (existingCategory) {
+      throw new ConflictException(
+        `Já existe uma categoria com o nome '${name}'`,
+      );
+    }
   }
 
   private async insertCategory(dto: CreateCategoryDto): Promise<Category> {
     const [category]: InsertQueryResponse<Category> =
-      await this.dataSource.query(
+      await this.categoryRepository.query(
         `
       INSERT INTO 
-        "categories" 
-        (name, 
-        observation, 
-        "startAt", 
-        "endAt", 
-        "passQuantity", 
-        "inscriptionPrice", 
-        "createdAt", 
-        "createdFunctionName")
+        category 
+        (name, description, rules)
       VALUES 
-        ($1, $2, $3, $4, $5, $6, NOW(), 'CreateCategoryService.insertCategory')
-      RETURNING *`,
-        [
-          dto.name,
-          dto.observation,
-          dto.startAt,
-          dto.endAt,
-          dto.passQuantity,
-          dto.inscriptionPrice,
-        ],
+        ($1, $2, $3)
+      RETURNING *;`,
+        [dto.name, dto.description, dto.rules],
       );
 
     return category;

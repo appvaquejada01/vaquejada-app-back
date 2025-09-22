@@ -1,78 +1,91 @@
-import { DataSource } from 'typeorm';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 import { Category } from 'src/entities/category.entity';
-import { ConnectionTypeEnum } from 'src/utils/database';
 import { UpdateQueryResponse } from 'src/shared/types/typeorm';
 
-import { UpdateCategoryDto, UpdateCategoryResponseDto } from '../dto';
+import { CategoryResponseDto, UpdateCategoryDto } from '../dto';
 
 @Injectable()
 export class UpdateCategoryService {
   constructor(
-    @InjectDataSource(ConnectionTypeEnum.DEFAULT)
-    private readonly dataSource: DataSource,
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
   ) {}
 
   async update(
     id: string,
-    dto: UpdateCategoryDto,
-    userId: string,
-  ): Promise<UpdateCategoryResponseDto> {
-    const category = await this.findCategoryById(id);
+    updateCategoryDto: UpdateCategoryDto,
+  ): Promise<CategoryResponseDto> {
+    const category = await this.categoryRepository.findOne({
+      where: { id },
+    });
 
-    const updatedCategory = await this.updateCategory(category.id, dto, userId);
+    if (!category) {
+      throw new NotFoundException(`Categoria com ID ${id} não encontrada`);
+    }
 
-    return UpdateCategoryResponseDto.fromEntity(updatedCategory);
+    // Verificar se o novo nome já existe (se foi alterado)
+    if (updateCategoryDto.name && updateCategoryDto.name !== category.name) {
+      await this.checkExistingCategory(updateCategoryDto.name, id);
+    }
+
+    // Atualizar apenas os campos fornecidos
+    const updatedCategory = await this.updateCategory(id, updateCategoryDto);
+
+    return CategoryResponseDto.fromEntity(updatedCategory);
   }
 
-  private async findCategoryById(categoryId: string): Promise<Category> {
-    const category = await this.dataSource
-      .createQueryBuilder(Category, 'category')
-      .where('category.id = :categoryId', { categoryId })
-      .getOne();
+  private async checkExistingCategory(
+    name: string,
+    excludeId?: string,
+  ): Promise<void> {
+    const queryBuilder = this.categoryRepository
+      .createQueryBuilder('category')
+      .where('category.name = :name', { name });
 
-    if (!category) throw new NotFoundException('Categoria não encontrada');
+    if (excludeId) {
+      queryBuilder.andWhere('category.id != :excludeId', { excludeId });
+    }
 
-    return category;
+    const existingCategory = await queryBuilder.getOne();
+
+    if (existingCategory) {
+      throw new ConflictException(
+        `Já existe uma categoria com o nome '${name}'`,
+      );
+    }
   }
 
   private async updateCategory(
-    categoryId: string,
-    dto: UpdateCategoryDto,
-    userId: string,
+    id: string,
+    updateCategoryDto: UpdateCategoryDto,
   ): Promise<Category> {
-    const [[category]]: UpdateQueryResponse<Category> =
-      await this.dataSource.query(
+    const { name, description } = updateCategoryDto;
+
+    const [[result]]: UpdateQueryResponse<Category> =
+      await this.categoryRepository.query(
         `
       UPDATE 
-        "categories" 
+        category
       SET
-        name = $1,
-        observation = $2,
-        "startAt" = $3,
-        "endAt" = $4,
-        "passQuantity" = $5,
-        "inscriptionPrice" = $6,
-        "updatedAt" = NOW(),
-        "updatedUserId" = $7,
-        "updatedFunctionName" = 'UpdateCategoryService.updateCategory'
-      WHERE
-        id = $8
+        name = COALESCE($1, name),
+        description = COALESCE($2, description)
+      WHERE 
+        id = $3
       RETURNING *`,
-        [
-          dto.name,
-          dto.observation,
-          dto.startAt,
-          dto.endAt,
-          dto.passQuantity,
-          dto.inscriptionPrice,
-          userId,
-          categoryId,
-        ],
+        [name ?? null, description ?? null, id],
       );
 
-    return category;
+    if (!result[0]) {
+      throw new NotFoundException(`Categoria com ID ${id} não encontrada`);
+    }
+
+    return result;
   }
 }

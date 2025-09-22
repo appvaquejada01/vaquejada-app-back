@@ -1,4 +1,4 @@
-import { IsString, IsDateString, IsNumber, IsEnum } from 'class-validator';
+import { IsString, IsEnum, IsOptional } from 'class-validator';
 import { CategoryNameEnum } from '../enums';
 import { Category } from 'src/entities';
 
@@ -7,39 +7,34 @@ export class CreateCategoryDto {
   name: CategoryNameEnum;
 
   @IsString()
-  observation: string;
+  @IsOptional()
+  description?: string;
 
-  @IsDateString()
-  startAt: string;
-
-  @IsDateString()
-  endAt: string;
-
-  @IsNumber()
-  passQuantity: number;
-
-  @IsNumber()
-  inscriptionPrice: number;
+  @IsString()
+  @IsOptional()
+  rules?: string;
 }
 
 export class CreateCategoryResponseDto {
   id: string;
-  name: CategoryNameEnum;
-  observation: string;
-  startAt: string;
-  endAt: string;
-  passQuantity: number;
-  inscriptionPrice: number;
+  name: string;
+  description: string;
+  rules: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 
-  static fromEntity(category: Category): CreateCategoryResponseDto {
-    return {
-      id: category.id,
-      name: category.name,
-      observation: category.observation,
-      startAt: category.startAt,
-      endAt: category.endAt,
-      passQuantity: category.passQuantity,
-      inscriptionPrice: category.inscriptionPrice,
-    };
+  static fromEntity(entity: Category): CreateCategoryResponseDto {
+    const response = new CreateCategoryResponseDto();
+
+    response.id = entity.id;
+    response.name = entity.name;
+    response.description = entity.description;
+    response.rules = entity.rules;
+    response.isActive = entity.isActive;
+    response.createdAt = entity.createdAt;
+    response.updatedAt = entity.updatedAt;
+
+    return response;
   }
 }
