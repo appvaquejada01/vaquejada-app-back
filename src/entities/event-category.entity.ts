@@ -41,4 +41,12 @@ export class EventCategory extends AuditableAttributesWithTimeZone {
 
   @OneToMany(() => RunPurchase, (runPurchase) => runPurchase.eventCategory)
   runPurchases: RunPurchase[];
+
+  isAvailable(): boolean {
+    return this.currentRunners < this.maxRunners && this.isActive;
+  }
+
+  canRegister(): boolean {
+    return this.isAvailable() && new Date() < new Date(this.startAt);
+  }
 }
