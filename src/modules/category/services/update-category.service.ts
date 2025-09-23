@@ -78,10 +78,11 @@ export class UpdateCategoryService {
       await this.categoryRepository.query(
         `
       UPDATE 
-        category
+        categories
       SET
         "updatedAt" = NOW(),
         "updatedUserId" = $4,
+        "updatedFunction" = 'UpdateCategoryService.updateCategory',
         name = COALESCE($1, name),
         description = COALESCE($2, description)
       WHERE 
@@ -90,9 +91,7 @@ export class UpdateCategoryService {
         [name ?? null, description ?? null, id, userId],
       );
 
-    if (!result[0]) {
-      throw new NotFoundException(`Categoria com ID ${id} não encontrada`);
-    }
+    console.log(result);
 
     return result;
   }

@@ -46,10 +46,10 @@ export class CreateCategoryService {
       await this.categoryRepository.query(
         `
       INSERT INTO 
-        category 
-        ("createdAt", "createdUserId",name, description, rules)
+        categories 
+        ("createdAt", "createdUserId", "createdFunctionName", name, description, rules)
       VALUES 
-        (NOW(), $1, $2, $3, $4)
+        (NOW(), $1, 'CreateCategoryService.insertCategory', $2, $3, $4)
       RETURNING *;`,
         [userId, dto.name, dto.description, dto.rules],
       );
