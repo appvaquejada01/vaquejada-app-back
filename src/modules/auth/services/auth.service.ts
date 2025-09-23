@@ -24,7 +24,7 @@ export class AuthService {
       throw new InvalidCredentialsException();
     }
 
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, email: user.email, role: user.role };
     return {
       access_token: this.jwtService.sign(payload),
     };
@@ -33,7 +33,7 @@ export class AuthService {
   async validateUser(email: string, password: string): Promise<User | null> {
     const user = await this.dataSource
       .createQueryBuilder(User, 'user')
-      .select(['user.id', 'user.email', 'user.password'])
+      .select(['user.id', 'user.email', 'user.password', 'user.role'])
       .where('user.email = :email', { email })
       .getOne();
 

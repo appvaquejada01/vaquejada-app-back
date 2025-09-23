@@ -1,15 +1,19 @@
 import { IsString, IsEnum, IsOptional } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 import { CategoryNameEnum } from '../enums';
 import { Category } from 'src/entities';
 
 export class CreateCategoryDto {
+  @ApiProperty({ example: CategoryNameEnum.PROFESSIONAL })
   @IsEnum(CategoryNameEnum)
   name: CategoryNameEnum;
 
+  @ApiProperty()
   @IsString()
   @IsOptional()
   description?: string;
 
+  @ApiProperty()
   @IsString()
   @IsOptional()
   rules?: string;

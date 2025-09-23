@@ -67,7 +67,7 @@ export class EventController {
     @Body() createEventDto: CreateEventDto,
     @RequestUser() user: AuthenticatedUser,
   ): Promise<CreateEventResponseDto> {
-    return this.createEventService.create(createEventDto, user.id);
+    return this.createEventService.create(createEventDto, user.userId);
   }
 
   @Get()
@@ -94,7 +94,7 @@ export class EventController {
     @Body() updateEventDto: UpdateEventDto,
     @RequestUser() user: AuthenticatedUser,
   ): Promise<EventResponseDto> {
-    return this.updateEventService.update(id, updateEventDto, user.id);
+    return this.updateEventService.update(id, updateEventDto, user.userId);
   }
 
   @Delete(':id')
@@ -104,7 +104,7 @@ export class EventController {
     @Param('id', ParseUUIDPipe) id: string,
     @RequestUser() user: AuthenticatedUser,
   ): Promise<void> {
-    return this.deleteEventService.delete(id, user.id);
+    return this.deleteEventService.delete(id, user.userId);
   }
 
   @Patch(':id/status')
@@ -115,6 +115,6 @@ export class EventController {
     @Query('status') status: EventStatusEnum,
     @RequestUser() user: AuthenticatedUser,
   ): Promise<void> {
-    return this.updateStatusService.updateStatus(id, status, user.id);
+    return this.updateStatusService.updateStatus(id, status, user.userId);
   }
 }

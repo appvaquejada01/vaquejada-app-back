@@ -1,3 +1,3 @@
 export class AuthenticatedUser {
-  id: string;
+  userId: string;
 }

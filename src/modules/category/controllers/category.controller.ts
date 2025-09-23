@@ -56,7 +56,7 @@ export class CategoryController {
     @Body() createCategoryDto: CreateCategoryDto,
     @RequestUser() user: AuthenticatedUser,
   ): Promise<CreateCategoryResponseDto> {
-    return this.createCategoryService.create(createCategoryDto, user.id);
+    return this.createCategoryService.create(createCategoryDto, user.userId);
   }
 
   @Get()
@@ -84,6 +84,10 @@ export class CategoryController {
     @Body() updateCategoryDto: UpdateCategoryDto,
     @RequestUser() user: AuthenticatedUser,
   ): Promise<CategoryResponseDto> {
-    return this.updateCategoryService.update(id, updateCategoryDto, user.id);
+    return this.updateCategoryService.update(
+      id,
+      updateCategoryDto,
+      user.userId,
+    );
   }
 }

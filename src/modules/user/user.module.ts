@@ -4,6 +4,7 @@ import {
   ConnectionTypeEnum,
   typeOrmForFeatureToConnection,
 } from 'src/utils/database';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { User } from '../../entities';
 import * as Services from './services';
@@ -17,9 +18,10 @@ const services = Object.values(Services);
   imports: [
     typeOrmForFeatureToConnection(typeOrmEntities, ConnectionTypeEnum.DEFAULT),
     typeOrmForFeatureToConnection(typeOrmEntities, ConnectionTypeEnum.READONLY),
+    TypeOrmModule.forFeature([User]),
   ],
   controllers: [UserController],
   providers: [...services],
-  exports: [],
+  exports: [TypeOrmModule],
 })
 export class UserModule {}

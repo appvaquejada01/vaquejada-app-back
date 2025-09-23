@@ -30,6 +30,7 @@ import {
 } from '../dto';
 
 @Controller('users')
+@UseGuards(JwtAuthGuard)
 export class UserController {
   constructor(
     private readonly createUserService: CreateUserService,
@@ -39,7 +40,6 @@ export class UserController {
   ) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   async listUsers(
     @Query() query: QueryUserDto,
   ): Promise<ListUserResponseDto[]> {
@@ -47,7 +47,6 @@ export class UserController {
   }
 
   @Get(':userId')
-  @UseGuards(JwtAuthGuard)
   async getUserById(
     @Param('userId', new ParseUUIDPipe({ version: '4' })) userId: string,
   ): Promise<GetUserResponseDto> {
@@ -60,12 +59,11 @@ export class UserController {
   }
 
   @Put(':userId')
-  @UseGuards(JwtAuthGuard)
   async updateUser(
     @RequestUser() requestUser: AuthenticatedUser,
     @Param('userId', new ParseUUIDPipe({ version: '4' })) userId: string,
     @Body() body: UpdateUserDto,
   ): Promise<UpdateUserResponseDto> {
-    return this.updateUserService.update(userId, body, requestUser.id);
+    return this.updateUserService.update(userId, body, requestUser.userId);
   }
 }
