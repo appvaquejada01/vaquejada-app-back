@@ -70,7 +70,7 @@ export class CreateEventService {
       await this.eventRepository.query(
         `
       INSERT INTO 
-        event
+        events
         (name, 
         "startAt", 
         "endAt", 
@@ -81,13 +81,14 @@ export class CreateEventService {
         state, 
         description, 
         "bannerUrl", 
-        "isActive", 
+        is_active, 
         "isPublic", 
         "organizerId", 
         "createdAt", 
-        "createdUserId")
+        "createdUserId",
+        "createdFunctionName")
       VALUES
-        ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW(), $13)
+        ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW(), $14, 'CreateEventService.insertEvent')
       RETURNING *`,
         [
           createEventDto.name,
@@ -102,6 +103,7 @@ export class CreateEventService {
           createEventDto.bannerUrl || null,
           true,
           createEventDto.isPublic || false,
+          organizerId,
           organizerId,
         ],
       );

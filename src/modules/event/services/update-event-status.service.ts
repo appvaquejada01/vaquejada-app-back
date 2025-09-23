@@ -35,7 +35,7 @@ export class UpdateEventStatusService {
       await this.eventRepository.query(
         `
       UPDATE 
-        event
+        events
       SET 
         status = $1, 
         "updatedAt" = NOW(),

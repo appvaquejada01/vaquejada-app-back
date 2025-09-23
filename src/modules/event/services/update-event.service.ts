@@ -100,7 +100,7 @@ export class UpdateEventService {
       await this.eventRepository.query(
         `
       UPDATE 
-        event
+        events
       SET 
         name = $1,
         "startAt" = $2,
@@ -112,7 +112,7 @@ export class UpdateEventService {
         state = $8,
         description = $9,
         "bannerUrl" = $10,
-        "isActive" = $11,
+        is_active = $11,
         "isPublic" = $12,
         "updatedAt" = NOW(),
         "updatedUserId" = $13
