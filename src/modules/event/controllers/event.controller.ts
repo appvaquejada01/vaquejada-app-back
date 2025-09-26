@@ -81,7 +81,7 @@ export class EventController {
   @Get(':id')
   @EventFindOneDocumentation()
   async findOne(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ): Promise<EventResponseDto> {
     return this.getEventService.findOne(id);
   }
@@ -90,7 +90,7 @@ export class EventController {
   @Roles(UserRoleEnum.ADMIN, UserRoleEnum.ORGANIZER)
   @EventUpdateDocumentation()
   async update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateEventDto: UpdateEventDto,
     @RequestUser() user: AuthenticatedUser,
   ): Promise<EventResponseDto> {
@@ -101,7 +101,7 @@ export class EventController {
   @Roles(UserRoleEnum.ADMIN, UserRoleEnum.ORGANIZER)
   @EventDeleteDocumentation()
   async remove(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @RequestUser() user: AuthenticatedUser,
   ): Promise<void> {
     return this.deleteEventService.delete(id, user.userId);
@@ -111,7 +111,7 @@ export class EventController {
   @Roles(UserRoleEnum.ADMIN, UserRoleEnum.ORGANIZER)
   @EventChangeStatusDocumentation()
   async changeStatus(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Query('status') status: EventStatusEnum,
     @RequestUser() user: AuthenticatedUser,
   ): Promise<void> {

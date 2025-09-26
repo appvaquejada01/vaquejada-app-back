@@ -71,7 +71,7 @@ export class CategoryController {
   @Get(':id')
   @CategoryFindOneDocumentation()
   async findOne(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ): Promise<CategoryResponseDto> {
     return this.getCategoryService.findOne(id);
   }
@@ -80,7 +80,7 @@ export class CategoryController {
   @Roles(UserRoleEnum.ADMIN)
   @CategoryUpdateDocumentation()
   async update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
     @RequestUser() user: AuthenticatedUser,
   ): Promise<CategoryResponseDto> {
