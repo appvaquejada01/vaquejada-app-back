@@ -17,24 +17,22 @@ export class ListCategoryService {
     paginationDto: PaginationDto,
     isActive?: boolean,
   ): Promise<PaginatedResponseDto<CategoryResponseDto>> {
-    const queryBuilder = await this.createQueryBuilder(paginationDto, isActive);
+    const queryBuilder = this.createQueryBuilder(paginationDto, isActive);
     const totalCategories = await this.getCount(queryBuilder);
 
     const listCategories = await this.addPaginate(queryBuilder, paginationDto);
 
-    const categoriesDto = listCategories.map((category) =>
-      CategoryResponseDto.fromEntity(category),
-    );
+    const categoriesDto = listCategories.map(CategoryResponseDto.fromEntity);
 
     const meta = this.buildMeta(totalCategories, paginationDto);
 
     return { data: categoriesDto, meta };
   }
 
-  private async createQueryBuilder(
+  private createQueryBuilder(
     paginationDto: PaginationDto,
     isActive?: boolean,
-  ): Promise<SelectQueryBuilder<Category>> {
+  ): SelectQueryBuilder<Category> {
     const queryBuilder = this.categoryRepository
       .createQueryBuilder('category')
       .select([
