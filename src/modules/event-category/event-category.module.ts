@@ -5,7 +5,7 @@ import {
   ConnectionTypeEnum,
   typeOrmForFeatureToConnection,
 } from 'src/utils/database';
-import { Category, EventCategory } from 'src/entities';
+import { Category, Event, EventCategory } from 'src/entities';
 
 import * as Services from './services';
 import { EventCategoryController } from './controllers';

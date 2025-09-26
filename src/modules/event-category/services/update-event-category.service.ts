@@ -1,9 +1,10 @@
 import { Repository } from 'typeorm';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
 
 import { EventCategory } from 'src/entities';
 import { UserRoleEnum } from 'src/modules/user/enums';
+import { UpdateQueryResponse } from 'src/shared/types/typeorm';
 
 import { UpdateEventCategoryDto, EventCategoryResponseDto } from '../dto';
 import { EventCategoryValidationService } from './event-category-validation.service';
@@ -16,46 +17,76 @@ export class UpdateEventCategoryService {
     private readonly validationService: EventCategoryValidationService,
   ) {}
 
-  async execute(
-    eventId: string,
+  async update(
     eventCategoryId: string,
     dto: UpdateEventCategoryDto,
     userId: string,
     userRole: UserRoleEnum,
   ): Promise<EventCategoryResponseDto> {
-    try {
-      const event = await this.validationService.validateEvent(
-        eventId,
-        userId,
-        userRole,
-      );
-      this.validationService.validateEventStatusForModification(event);
+    const event = await this.validationService.validateEvent(
+      dto.eventId,
+      userId,
+      userRole,
+    );
+    this.validationService.validateEventStatusForModification(event);
 
-      const eventCategory = await this.validationService.validateEventCategory(
-        eventCategoryId,
-        eventId,
-      );
+    const eventCategory = await this.validationService.validateEventCategory(
+      eventCategoryId,
+      dto.eventId,
+    );
 
-      if (dto.maxRunners) {
-        this.validationService.validateCapacity(
-          dto.maxRunners,
-          eventCategory.currentRunners,
-        );
-      }
-
-      Object.assign(eventCategory, dto);
-      await this.eventCategoryRepository.save(eventCategory);
-
-      const updated = await this.eventCategoryRepository.findOne({
-        where: { id: eventCategoryId },
-        relations: ['category', 'event'],
-      });
-
-      return EventCategoryResponseDto.fromEntity(updated);
-    } catch (error) {
-      throw new InternalServerErrorException(
-        'Erro ao atualizar categoria do evento',
+    if (dto.maxRunners) {
+      this.validationService.validateCapacity(
+        dto.maxRunners,
+        eventCategory.currentRunners,
       );
     }
+
+    const result = await this.updateEventCategory(eventCategoryId, dto, userId);
+
+    const updatedEventCategory = await this.eventCategoryRepository.findOne({
+      where: { id: result.id },
+      relations: ['category'],
+    });
+
+    return EventCategoryResponseDto.fromEntity(updatedEventCategory!);
+  }
+
+  private async updateEventCategory(
+    eventCategoryId: string,
+    dto: UpdateEventCategoryDto,
+    userId: string,
+  ): Promise<EventCategory> {
+    const [[result]]: UpdateQueryResponse<EventCategory> =
+      await this.eventCategoryRepository.query(
+        `
+      UPDATE 
+        event_categories
+      SET
+        price = COALESCE($1, price),
+        "maxRunners" = COALESCE($2, "maxRunners"),
+        "currentRunners" = COALESCE($3, "currentRunners"),
+        "startAt" = COALESCE($4, "startAt"),
+        "endAt" = COALESCE($5, "endAt"),
+        "isActive" = COALESCE($6, "isActive"),
+        "updatedAt" = NOW(),
+        "updatedUserId" = $7,
+        "updatedFunctionName" = 'UpdateEventCategoryService.updateEventCategory'
+      WHERE 
+        id = $8
+      RETURNING *`,
+        [
+          dto.price,
+          dto.maxRunners,
+          dto.currentRunners,
+          dto.startAt,
+          dto.endAt,
+          dto.isActive,
+          userId,
+          eventCategoryId,
+        ],
+      );
+
+    return result;
   }
 }

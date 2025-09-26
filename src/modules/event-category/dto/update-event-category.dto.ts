@@ -1,12 +1,18 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsOptional,
   IsNumber,
   IsBoolean,
   IsDateString,
   IsInt,
+  IsUUID,
 } from 'class-validator';
 
 export class UpdateEventCategoryDto {
+  @ApiProperty({ description: 'ID do evento' })
+  @IsUUID()
+  eventId: string;
+
   @IsOptional()
   @IsNumber()
   price?: number;

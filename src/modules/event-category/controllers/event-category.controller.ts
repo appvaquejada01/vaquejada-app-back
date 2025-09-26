@@ -1,31 +1,41 @@
 import {
-  Controller,
+  Put,
   Get,
   Post,
-  Put,
-  Param,
   Body,
   Query,
-  ParseUUIDPipe,
+  Param,
   UseGuards,
+  Controller,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
+import { RequestUser } from 'src/shared/decorators';
+import { UserRoleEnum } from 'src/modules/user/enums';
+import { AuthenticatedUser } from 'src/shared/types/routes';
 import { JwtAuthGuard, RolesGuard } from 'src/shared/guards';
 import { Roles } from 'src/shared/decorators/roles.decorator';
-import { UserRoleEnum } from 'src/modules/user/enums';
-import { CreateEventCategoryDto, UpdateEventCategoryDto } from '../dto';
+import { PaginatedResponseDto, PaginationDto } from 'src/shared/dto';
+
 import {
-  CreateEventCategoryService,
+  CreateEventCategoryDto,
+  UpdateEventCategoryDto,
+  EventCategoryResponseDto,
+  ListEventCategoryResponseDto,
+} from '../dto';
+import {
+  EventCategoryCreateDocumentation,
+  EventCategoryFindAllDocumentation,
+  EventCategoryFindOneDocumentation,
+  EventCategoryUpdateDocumentation,
+} from '../docs';
+import {
   GetEventCategoryService,
+  CreateEventCategoryService,
   ListEventCategoriesService,
   UpdateEventCategoryService,
 } from '../services';
-import { EventCategoryResponseDto } from '../dto/event-category-response.dto';
-import { ListEventCategoryResponseDto } from '../dto/list-event-category-response.dto';
-import { RequestUser } from 'src/shared/decorators';
-import { AuthenticatedUser } from 'src/shared/types/routes';
-import { PaginatedResponseDto, PaginationDto } from 'src/shared/dto';
 
 @ApiTags('event-categories')
 @ApiBearerAuth()
@@ -41,35 +51,47 @@ export class EventCategoryController {
 
   @Post()
   @Roles(UserRoleEnum.ADMIN)
+  @EventCategoryCreateDocumentation()
   async create(
     @Body() dto: CreateEventCategoryDto,
     @RequestUser() user: AuthenticatedUser,
   ): Promise<EventCategoryResponseDto> {
-    // Se quiser registrar o usuário, pode passar user.id
-    return this.createEventCategoryService.create(dto);
+    return this.createEventCategoryService.create(dto, user.userId, user.role);
   }
 
   @Get()
+  @EventCategoryFindAllDocumentation()
   async findAll(
     @Query() paginationDto: PaginationDto,
+    @Query('eventId', new ParseUUIDPipe({ version: '4' })) eventId: string,
   ): Promise<PaginatedResponseDto<ListEventCategoryResponseDto>> {
-    return this.listEventCategoryService.findAll(paginationDto);
+    return this.listEventCategoryService.findAll(eventId, paginationDto);
   }
 
-  @Get(':id')
+  @Get(':eventId/:eventCategoryId')
+  @EventCategoryFindOneDocumentation()
   async findOne(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('eventId', new ParseUUIDPipe({ version: '4' })) eventId: string,
+    @Param('eventCategoryId', new ParseUUIDPipe({ version: '4' }))
+    eventCategoryId: string,
   ): Promise<EventCategoryResponseDto> {
-    return this.getEventCategoryService.findOne(id);
+    return this.getEventCategoryService.findOne(eventId, eventCategoryId);
   }
 
-  @Put(':id')
+  @Put(':eventCategoryId')
   @Roles(UserRoleEnum.ADMIN)
+  @EventCategoryUpdateDocumentation()
   async update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('eventCategoryId', new ParseUUIDPipe({ version: '4' }))
+    eventCategoryId: string,
     @Body() dto: UpdateEventCategoryDto,
     @RequestUser() user: AuthenticatedUser,
   ): Promise<EventCategoryResponseDto> {
-    return this.updateEventCategoryService.update(id, dto);
+    return this.updateEventCategoryService.update(
+      eventCategoryId,
+      dto,
+      user.userId,
+      user.role,
+    );
   }
 }

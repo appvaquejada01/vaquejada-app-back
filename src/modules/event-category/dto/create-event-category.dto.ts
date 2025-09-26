@@ -1,15 +1,19 @@
 import {
+  Min,
+  IsInt,
   IsUUID,
   IsNumber,
-  IsDateString,
-  IsInt,
   IsBoolean,
-  Min,
   IsPositive,
+  IsDateString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateEventCategoryDto {
+  @ApiProperty({ description: 'ID do evento' })
+  @IsUUID()
+  eventId: string;
+
   @ApiProperty({ description: 'ID da categoria' })
   @IsUUID()
   categoryId: string;

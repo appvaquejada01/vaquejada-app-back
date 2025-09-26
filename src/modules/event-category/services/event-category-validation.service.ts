@@ -32,8 +32,11 @@ export class EventCategoryValidationService {
       where: { id: eventId },
       relations: ['organizer'],
     });
+
     if (!event) throw new NotFoundException('Evento não encontrado');
+
     this.checkEventPermission(event, userId, userRole);
+
     return event;
   }
 
@@ -44,8 +47,10 @@ export class EventCategoryValidationService {
     const eventCategory = await this.eventCategoryRepository.findOne({
       where: { id: eventCategoryId, event: { id: eventId } },
     });
+
     if (!eventCategory)
       throw new NotFoundException('Categoria de evento não encontrada');
+
     return eventCategory;
   }
 
@@ -66,9 +71,12 @@ export class EventCategoryValidationService {
     const category = await this.categoryRepository.findOne({
       where: { id: categoryId },
     });
+
     if (!category) throw new NotFoundException('Categoria não encontrada');
+
     if (!category.isActive)
       throw new BadRequestException('Categoria não está ativa');
+
     return category;
   }
 
@@ -79,6 +87,7 @@ export class EventCategoryValidationService {
     const existing = await this.eventCategoryRepository.findOne({
       where: { event: { id: eventId }, category: { id: categoryId } },
     });
+
     if (existing)
       throw new ConflictException('Esta categoria já foi adicionada ao evento');
   }
@@ -99,14 +108,17 @@ export class EventCategoryValidationService {
       throw new BadRequestException(
         'Data de início deve ser anterior à de término',
       );
+
     if (categoryStart < eventStart)
       throw new BadRequestException(
         'Categoria não pode começar antes do evento',
       );
+
     if (categoryEnd > eventEnd)
       throw new BadRequestException(
         'Categoria não pode terminar depois do evento',
       );
+
     if (categoryStart < now)
       throw new BadRequestException('Categoria não pode começar no passado');
   }
@@ -114,6 +126,7 @@ export class EventCategoryValidationService {
   validateCapacity(maxRunners: number, currentRunners = 0): void {
     if (maxRunners <= 0)
       throw new BadRequestException('Capacidade deve ser maior que zero');
+
     if (maxRunners < currentRunners)
       throw new BadRequestException(
         'Nova capacidade não pode ser menor que participantes atuais',
@@ -126,8 +139,10 @@ export class EventCategoryValidationService {
     userRole: UserRoleEnum,
   ): void {
     if (userRole === UserRoleEnum.ADMIN) return;
+
     if (userRole === UserRoleEnum.ORGANIZER && event.organizerId === userId)
       return;
+
     throw new ForbiddenException('Acesso negado para editar este evento');
   }
 }

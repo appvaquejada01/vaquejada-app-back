@@ -12,7 +12,7 @@ export class GetEventCategoryService {
     private readonly eventCategoryRepository: Repository<EventCategory>,
   ) {}
 
-  async execute(
+  async findOne(
     eventId: string,
     eventCategoryId: string,
   ): Promise<EventCategoryResponseDto> {
