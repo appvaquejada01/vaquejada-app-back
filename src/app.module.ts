@@ -4,10 +4,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppDataSource } from './config/database';
 import { ConnectionTypeEnum } from './utils/database';
 
+import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { EventModule } from './modules/event/event.module';
-import { AuthModule } from './modules/auth/auth.module';
 import { CategoryModule } from './modules/category/category.module';
+import { PasswordModule } from './modules/password/password.module';
 import { EventCategoryModule } from './modules/event-category/event-category.module';
 
 const imports = [
@@ -22,6 +23,7 @@ const imports = [
   UserModule,
   EventModule,
   CategoryModule,
+  PasswordModule,
   EventCategoryModule,
 ];
 

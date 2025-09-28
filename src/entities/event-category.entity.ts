@@ -7,7 +7,6 @@ import {
 } from 'typeorm';
 import { Event } from './event.entity';
 import { Category } from './category.entity';
-import { RunPurchase } from './run-purchase.entity';
 import { AuditableAttributesWithTimeZone } from 'src/shared/entities';
 
 @Entity('event_categories')
@@ -38,9 +37,6 @@ export class EventCategory extends AuditableAttributesWithTimeZone {
 
   @ManyToOne(() => Category, (category) => category.eventCategories)
   category: Category;
-
-  @OneToMany(() => RunPurchase, (runPurchase) => runPurchase.eventCategory)
-  runPurchases: RunPurchase[];
 
   isAvailable(): boolean {
     return this.currentRunners < this.maxRunners && this.isActive;

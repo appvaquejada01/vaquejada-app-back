@@ -8,9 +8,10 @@ import {
 } from 'typeorm';
 
 import { Event } from './event.entity';
-import { RunPurchase } from './run-purchase.entity';
 import { UserNatureEnum, UserRoleEnum } from '../modules/user/enums';
 import { AuditableAttributesWithTimeZone } from '../shared/entities/auditable.entity';
+import { Subscription } from './subscription.entity';
+import { Score } from './score.entity';
 
 @Entity('users')
 export class User extends AuditableAttributesWithTimeZone {
@@ -50,12 +51,9 @@ export class User extends AuditableAttributesWithTimeZone {
   @OneToMany(() => Event, (event) => event.organizer)
   organizedEvents: Event[];
 
-  @OneToMany(() => RunPurchase, (runPurchase) => runPurchase.user)
-  runPurchases: RunPurchase[];
-
   // RELAÇÃO COM SCORES (como juiz)
-  // @OneToMany(() => Score, (score) => score.judge)
-  // scoresGiven: Score[];
+  @OneToMany(() => Score, (score) => score.judge)
+  scoresGiven: Score[];
 
   // RELAÇÃO COM EVENTOS COMO CORREDOR (N:N)
   @ManyToMany(() => Event, (event) => event.runners)
@@ -83,4 +81,7 @@ export class User extends AuditableAttributesWithTimeZone {
     inverseJoinColumn: { name: 'event_id', referencedColumnName: 'id' },
   })
   eventsAsSpeaker: Event[];
+
+  @OneToMany(() => Subscription, (subscription) => subscription.user)
+  subscriptions: Subscription[];
 }

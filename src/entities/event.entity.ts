@@ -11,11 +11,11 @@ import {
 import { EventStatusEnum } from '../modules/event/enums';
 import { AuditableAttributesWithTimeZone } from '../shared/entities/auditable.entity';
 
-import { Run } from './run.entity';
 import { User } from './user.entity';
-import { RunPurchase } from './run-purchase.entity';
-import { RunCategory } from './run-category.entity';
 import { EventCategory } from './event-category.entity';
+import { Score } from './score.entity';
+import { Subscription } from './subscription.entity';
+import { Password } from './password.entity';
 
 @Entity('events')
 export class Event extends AuditableAttributesWithTimeZone {
@@ -90,20 +90,17 @@ export class Event extends AuditableAttributesWithTimeZone {
   })
   speakers: User[];
 
-  @OneToMany(() => RunPurchase, (runPurchase) => runPurchase.event)
-  runPurchases: RunPurchase[];
-
-  @OneToMany(() => Run, (run) => run.event)
-  runs: Run[];
-
-  @OneToMany(() => RunCategory, (runCategory) => runCategory.event)
-  runCategories: RunCategory[];
-
   @OneToMany(() => EventCategory, (eventCategory) => eventCategory.event)
   eventCategories: EventCategory[];
 
-  // @OneToMany(() => Score, (score) => score.event)
-  // scores: Score[];
+  @OneToMany(() => Password, (password) => password.event)
+  passwords: Password[];
+
+  @OneToMany(() => Score, (score) => score.event)
+  scores: Score[];
+
+  @OneToMany(() => Subscription, (subscription) => subscription.event)
+  subscriptions: Subscription[];
 
   canPurchaseRuns(): boolean {
     return (
