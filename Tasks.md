@@ -10,31 +10,29 @@
 - [x] Criação dos endpoints de categorias (criar, listar, buscar por id)
 - [x] Criação de seeds para usuários, categorias e eventos
 
-- [ ] Implementar sistema de senhas das vaquejadas
+- [x] Implementar sistema de senhas das vaquejadas
 - [ ] Implementar sistema de pagamento das senhas
 - [ ] Implementar inscrição dos corredores na vaquejada com escolha de evento, categoria e senhas
 - [ ] Implementar sistema de notas para cada corredor dada por um juiz (Opções de votos do Juiz: Valeu o Boi / Nulo / TV / Boi não quis correr)
-- [ ] Documentação das APIs com Swagger
+- [x] Documentação das APIs com Swagger
 
 # Tarefas a serem feitas
 
 1. Sistema de Senhas e Mapa de Senhas
 
 - Entidades necessárias:
-- [ ] Password (Senha) - com status: available, reserved, sold, used
-- [ ] PasswordBlock (Lote de senhas) - agrupamento por categoria/área
+- [x] Password (Senha) - com status: available, reserved, sold, used
 - [ ] PasswordPurchase (Compra de senha)
 
 - Endpoints necessários:
-- [ ] GET /events/:id/passwords - Listar senhas disponíveis com mapa
-- [ ] POST /events/:id/passwords/reserve - Reservar senha temporariamente
-- [ ] POST /events/:id/passwords/purchase - Comprar sen- h a
+- [x] GET /passwords?eventId=uuid&categoryId=uuid - Listar senhas disponíveis com mapa por categoria
+- [ ] POST /events/:id/passwords/purchase - Comprar senha
 - [ ] GET /users/:userId/purchased-passwords - Senhas compradas por usuário
 
 2. Sistema de Inscrição Completo
 
 - Entidades:
-- [ ] - Registration (Inscrição) - relaciona usuário, evento, categoria, senhas
+- [ ] - Subscription (Inscrição) - relaciona usuário, evento, categoria, senhas
 
 - Endpoints:
 - [ ] POST /events/:eventId/register - Inscrever competidor
@@ -43,7 +41,7 @@
 3. Sistema de Julgamento (Juízes)
 
 - Entidades:
-- [ ] - Score (Nota) - com: value, type, judge_id, registration_id
+- [x] - Score (Nota) - com: value, type, judge_id, registration_id
 - [ ] - ScoreType (Tipo de nota) - Valeu o Boi, Nulo, TV, Boi não quis correr
 
 - Endpoints específicos para juízes:
@@ -68,3 +66,10 @@
 - [ ] GET /events/:id/reports/password-sales - Relatório de vendas de senhas
 - [ ] GET /events/:id/reports/competitors - Relatório de competidores
 - [ ] GET /events/:id/reports/scores - Relatório de notas e classificações
+
+6. Endpoints de EventCategory
+
+- [x] GET /events/:id/event-categories - Listar categorias do evento
+- [x] POST /events/:id/event-categories - Adicionar categoria ao evento
+- [x] GET /event-categories/:id - Buscar categoria de evento por id
+- [x] PUT /event-categories/:id - Atualizar categoria de evento
