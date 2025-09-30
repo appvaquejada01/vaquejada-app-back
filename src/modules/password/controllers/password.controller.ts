@@ -7,15 +7,22 @@ import { AuthenticatedUser } from 'src/shared/types/routes';
 import { JwtAuthGuard, RolesGuard } from 'src/shared/guards';
 
 import {
+  PasswordDto,
   CreatePasswordDto,
   PasswordResponseDto,
+  PurchasePasswordDto,
   QueryListPasswordDto,
 } from '../dto/';
 import {
   PasswordListDocumentation,
   PasswordCreateDocumentation,
+  PasswordPurchaseDocumentation,
 } from '../docs/password.swagger';
-import { CreatePasswordService, ListPasswordsService } from '../services';
+import {
+  ListPasswordsService,
+  CreatePasswordService,
+  PurchasePasswordService,
+} from '../services';
 
 @ApiTags('passwords')
 @ApiBearerAuth()
@@ -25,6 +32,7 @@ export class PasswordController {
   constructor(
     private readonly createPasswordService: CreatePasswordService,
     private readonly listPasswordsService: ListPasswordsService,
+    private readonly purchasePasswordService: PurchasePasswordService,
   ) {}
 
   @Post()
@@ -43,5 +51,14 @@ export class PasswordController {
     @Query() query: QueryListPasswordDto,
   ): Promise<PasswordResponseDto[]> {
     return this.listPasswordsService.findAll(query);
+  }
+
+  @Post('purchase')
+  @PasswordPurchaseDocumentation()
+  async purchase(
+    @Body() dto: PurchasePasswordDto,
+    @RequestUser() user: AuthenticatedUser,
+  ): Promise<PasswordDto> {
+    return this.purchasePasswordService.purchase(dto, user.userId);
   }
 }

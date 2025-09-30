@@ -1,4 +1,5 @@
-import { Password, PasswordStatus } from 'src/entities';
+import { Password } from 'src/entities';
+import { PasswordStatusEnum } from '../enums';
 
 export class PasswordResponseDto {
   id: string;
@@ -6,7 +7,7 @@ export class PasswordResponseDto {
   categoryId: string;
   price: number;
   number: string;
-  status: PasswordStatus;
+  status: PasswordStatusEnum;
   soldAt: Date;
 
   static fromEntity(entity: Password): PasswordResponseDto {

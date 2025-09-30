@@ -1,8 +1,10 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiQuery, ApiBody } from '@nestjs/swagger';
 import {
+  PasswordDto,
   CreatePasswordDto,
   PasswordResponseDto,
+  PurchasePasswordDto,
   QueryListPasswordDto,
 } from '../dto';
 
@@ -32,6 +34,23 @@ export function PasswordListDocumentation() {
       description: 'Lista de senhas',
       type: PasswordResponseDto,
       isArray: true,
+    }),
+  );
+}
+
+export function PasswordPurchaseDocumentation() {
+  return applyDecorators(
+    ApiOperation({ summary: 'Comprar senha' }),
+    ApiBody({ type: PurchasePasswordDto }),
+    ApiResponse({
+      status: 201,
+      description: 'Senha comprada com sucesso',
+      type: PasswordDto,
+    }),
+    ApiResponse({
+      status: 409,
+      description:
+        'Já existe uma senha com esse código para esta categoria de evento.',
     }),
   );
 }

@@ -12,7 +12,7 @@
 
 - [x] Implementar sistema de senhas das vaquejadas
 - [ ] Implementar sistema de pagamento das senhas
-- [ ] Implementar inscrição dos corredores na vaquejada com escolha de evento, categoria e senhas
+- [x] Implementar inscrição dos corredores na vaquejada com escolha de evento, categoria e senhas
 - [ ] Implementar sistema de notas para cada corredor dada por um juiz (Opções de votos do Juiz: Valeu o Boi / Nulo / TV / Boi não quis correr)
 - [x] Documentação das APIs com Swagger
 
@@ -22,20 +22,19 @@
 
 - Entidades necessárias:
 - [x] Password (Senha) - com status: available, reserved, sold, used
-- [ ] PasswordPurchase (Compra de senha)
+- [x] PasswordPurchase (Compra de senha)
 
 - Endpoints necessários:
 - [x] GET /passwords?eventId=uuid&categoryId=uuid - Listar senhas disponíveis com mapa por categoria
-- [ ] POST /events/:id/passwords/purchase - Comprar senha
-- [ ] GET /users/:userId/purchased-passwords - Senhas compradas por usuário
+- [x] POST /passwords/purchase - Comprar senha / Inscrever competidor
+- [ ] GET /passwords? - Senhas compradas por usuário, categoria ou evento
 
 2. Sistema de Inscrição Completo
 
 - Entidades:
-- [ ] - Subscription (Inscrição) - relaciona usuário, evento, categoria, senhas
+- [x] - Subscription (Inscrição) - relaciona usuário, evento, categoria, senhas
 
 - Endpoints:
-- [ ] POST /events/:eventId/register - Inscrever competidor
 - [ ] GET /events/:eventId/registrations - Listar inscrições (apropriado por perfil)
 
 3. Sistema de Julgamento (Juízes)

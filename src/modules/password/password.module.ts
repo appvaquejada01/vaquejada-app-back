@@ -6,7 +6,7 @@ import {
   typeOrmForFeatureToConnection,
 } from 'src/utils/database';
 
-import { Category, Event, Password } from 'src/entities';
+import { Category, Event, Password, Subscription } from 'src/entities';
 
 import * as Services from './services';
 import { PasswordController } from './controllers';
@@ -19,7 +19,7 @@ const services = Object.values(Services);
   imports: [
     typeOrmForFeatureToConnection(typeOrmEntities, ConnectionTypeEnum.DEFAULT),
     typeOrmForFeatureToConnection(typeOrmEntities, ConnectionTypeEnum.READONLY),
-    TypeOrmModule.forFeature([Password, Event, Category]),
+    TypeOrmModule.forFeature([Password, Event, Category, Subscription]),
   ],
   controllers: [PasswordController],
   providers: [...services],

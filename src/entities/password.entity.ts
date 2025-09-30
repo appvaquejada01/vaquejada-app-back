@@ -5,16 +5,13 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
+import { PasswordStatusEnum } from 'src/modules/password/enums';
+import { AuditableAttributesWithTimeZone } from 'src/shared/entities';
+
 import { Event } from './event.entity';
 import { Category } from './category.entity';
 import { Subscription } from './subscription.entity';
-import { AuditableAttributesWithTimeZone } from 'src/shared/entities';
-
-export enum PasswordStatus {
-  AVAILABLE = 'available',
-  USED = 'used',
-  RESERVED = 'reserved',
-}
 
 @Entity('passwords')
 export class Password extends AuditableAttributesWithTimeZone {
@@ -29,9 +26,9 @@ export class Password extends AuditableAttributesWithTimeZone {
 
   @Column({
     type: 'varchar',
-    default: PasswordStatus.AVAILABLE,
+    default: PasswordStatusEnum.AVAILABLE,
   })
-  status: PasswordStatus;
+  status: PasswordStatusEnum;
 
   @ManyToOne(() => Event, (event) => event.passwords)
   event: Event;

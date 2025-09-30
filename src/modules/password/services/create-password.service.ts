@@ -7,8 +7,9 @@ import {
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { Category, Event, Password, PasswordStatus } from 'src/entities';
+import { Category, Event, Password } from 'src/entities';
 
+import { PasswordStatusEnum } from '../enums';
 import { CreatePasswordDto, PasswordResponseDto } from '../dto';
 
 @Injectable()
@@ -132,7 +133,8 @@ export class CreatePasswordService {
         categoryId: dto.categoryId,
         number: number,
         price: dto.price,
-        status: PasswordStatus.AVAILABLE,
+        status: PasswordStatusEnum.AVAILABLE,
+        createdAt: new Date(),
         createdUserId: userId,
         createdFunctionName: 'CreatePasswordService.create',
       });
@@ -175,11 +177,14 @@ export class CreatePasswordService {
 
     return {
       total: passwords.length,
-      available: passwords.filter((p) => p.status === PasswordStatus.AVAILABLE)
+      available: passwords.filter(
+        (p) => p.status === PasswordStatusEnum.AVAILABLE,
+      ).length,
+      used: passwords.filter((p) => p.status === PasswordStatusEnum.USED)
         .length,
-      used: passwords.filter((p) => p.status === PasswordStatus.USED).length,
-      reserved: passwords.filter((p) => p.status === PasswordStatus.RESERVED)
-        .length,
+      reserved: passwords.filter(
+        (p) => p.status === PasswordStatusEnum.RESERVED,
+      ).length,
     };
   }
 }
