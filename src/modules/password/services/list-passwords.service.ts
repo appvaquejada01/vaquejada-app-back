@@ -25,6 +25,10 @@ export class ListPasswordsService {
       qb.andWhere('password.categoryId = :categoryId', { categoryId });
     }
 
+    if (query.status) {
+      qb.andWhere('password.status = :status', { status: query.status });
+    }
+
     const passwords = await qb.getMany();
 
     return passwords.map((password) =>

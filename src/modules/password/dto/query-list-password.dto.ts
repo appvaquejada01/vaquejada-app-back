@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsUUID } from 'class-validator';
+import { IsEnum, IsOptional, IsUUID } from 'class-validator';
+import { PasswordStatusEnum } from '../enums';
 
 export class QueryListPasswordDto {
   @ApiProperty({ description: 'ID do evento' })
@@ -10,4 +11,9 @@ export class QueryListPasswordDto {
   @IsUUID()
   @IsOptional()
   categoryId?: string;
+
+  @ApiProperty({ description: 'Status da senha' })
+  @IsEnum(PasswordStatusEnum)
+  @IsOptional()
+  status?: PasswordStatusEnum;
 }
