@@ -1,23 +1,18 @@
 import {
   Entity,
   Column,
-  OneToOne,
   OneToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from './user.entity';
-import { Event } from './event.entity';
-import { Category } from './category.entity';
-import { Password } from './password.entity';
-import { Score } from './score.entity';
+import { SubscriptionStatus } from 'src/modules/subscription/enum';
 import { AuditableAttributesWithTimeZone } from 'src/shared/entities';
 
-export enum SubscriptionStatus {
-  PENDING = 'pending',
-  CONFIRMED = 'confirmed',
-  CANCELLED = 'cancelled',
-}
+import { User } from './user.entity';
+import { Event } from './event.entity';
+import { Score } from './score.entity';
+import { Category } from './category.entity';
+import { Password } from './password.entity';
 
 @Entity('subscriptions')
 export class Subscription extends AuditableAttributesWithTimeZone {

@@ -14,15 +14,15 @@ import {
   QueryListPasswordDto,
 } from '../dto/';
 import {
-  PasswordListDocumentation,
-  PasswordCreateDocumentation,
-  PasswordPurchaseDocumentation,
-} from '../docs/password.swagger';
-import {
   ListPasswordsService,
   CreatePasswordService,
   PurchasePasswordService,
 } from '../services';
+import {
+  PasswordListDocumentation,
+  PasswordCreateDocumentation,
+  PasswordPurchaseDocumentation,
+} from '../docs/password.swagger';
 
 @ApiTags('passwords')
 @ApiBearerAuth()
@@ -30,8 +30,8 @@ import {
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class PasswordController {
   constructor(
-    private readonly createPasswordService: CreatePasswordService,
     private readonly listPasswordsService: ListPasswordsService,
+    private readonly createPasswordService: CreatePasswordService,
     private readonly purchasePasswordService: PurchasePasswordService,
   ) {}
 

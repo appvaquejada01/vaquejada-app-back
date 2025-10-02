@@ -6,14 +6,9 @@ import {
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import {
-  Event,
-  Category,
-  Password,
-  Subscription,
-  SubscriptionStatus,
-} from 'src/entities';
 import { UpdateQueryResponse } from 'src/shared/types/typeorm';
+import { SubscriptionStatus } from 'src/modules/subscription/enum';
+import { Event, Category, Password, Subscription } from 'src/entities';
 
 import { PasswordStatusEnum } from '../enums';
 import { PasswordDto, PurchasePasswordDto } from '../dto';
@@ -35,10 +30,8 @@ export class PurchasePasswordService {
     purchaseDto: PurchasePasswordDto,
     userId: string,
   ): Promise<PasswordDto> {
-    const [password] = await Promise.all([
-      this.validateEntities(purchaseDto),
-      this.validateExistingSubscription(purchaseDto, userId),
-    ]);
+    const password = await this.validateEntities(purchaseDto);
+    await this.validateExistingSubscription(purchaseDto, userId);
 
     const subscription = await this.insertSubscription(purchaseDto, userId);
     const updatedPassword = await this.updatePasswordStatus(password, userId);
@@ -80,13 +73,20 @@ export class PurchasePasswordService {
 
     const subscription = await this.subscriptionRepository
       .createQueryBuilder('subscription')
-      .select(['subscription.id', 'subscription.status'])
+      .select([
+        'subscription.id',
+        'subscription.status',
+        'subscription.userId',
+        'subscription.eventId',
+        'subscription.categoryId',
+        'subscription.passwordId',
+      ])
       .where('subscription.userId = :userId', { userId })
       .andWhere('subscription.eventId = :eventId', { eventId })
       .andWhere('subscription.categoryId = :categoryId', { categoryId })
       .andWhere('subscription.passwordId = :passwordId', { passwordId })
-      .andWhere('subscription.status = :status', {
-        status: SubscriptionStatus.CONFIRMED,
+      .andWhere('subscription.status <> :status', {
+        status: SubscriptionStatus.CANCELLED,
       })
       .getOne();
 
