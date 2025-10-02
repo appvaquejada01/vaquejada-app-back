@@ -12,6 +12,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(apiRateLimiter);
 
+  app.enableCors({ origin: 'http://localhost:8080' });
+
   const config = new DocumentBuilder()
     .setTitle('Vaquejada API')
     .setDescription('Documentação das rotas da API Vaquejada')

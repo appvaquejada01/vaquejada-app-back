@@ -46,6 +46,13 @@ export class UserController {
     return this.listUserService.list(query);
   }
 
+  @Get('me')
+  async getMe(
+    @RequestUser() user: AuthenticatedUser,
+  ): Promise<GetUserResponseDto> {
+    return this.getUserService.getById(user.userId);
+  }
+
   @Get(':userId')
   async getUserById(
     @Param('userId', new ParseUUIDPipe({ version: '4' })) userId: string,
