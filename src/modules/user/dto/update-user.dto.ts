@@ -1,4 +1,5 @@
 import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
+import { SanitizeNumber } from 'src/shared/decorators/sanitize-number.decorator';
 import { UserNatureEnum } from '../enums';
 import { User } from 'src/entities';
 
@@ -17,6 +18,7 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
+  @SanitizeNumber()
   cpf?: string;
 
   @IsOptional()
@@ -25,6 +27,7 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
+  @SanitizeNumber()
   phone?: string;
 
   @IsOptional()

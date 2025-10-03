@@ -1,7 +1,12 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { User } from 'src/entities';
+import { SanitizeNumber } from 'src/shared/decorators';
 
 export class CreateUserDto {
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
   @IsNotEmpty()
   @IsEmail()
   email: string;
@@ -12,11 +17,13 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsString()
-  name: string;
+  @SanitizeNumber()
+  cpf: string;
 
   @IsNotEmpty()
   @IsString()
-  cpf: string;
+  @SanitizeNumber()
+  phone: string;
 
   static fromEntity(createdUser: User): CreateUserDto {
     const dto = new CreateUserDto();
@@ -24,6 +31,7 @@ export class CreateUserDto {
     dto.email = createdUser.email;
     dto.name = createdUser.name;
     dto.password = createdUser.password;
+    dto.phone = createdUser.phone;
     dto.cpf = createdUser.cpf;
 
     return dto;

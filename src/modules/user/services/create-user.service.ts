@@ -12,20 +12,29 @@ import {
   EmailAlreadyInUseException,
 } from '../exceptions';
 import { CreateUserDto } from '../dto';
+import { AuthService } from 'src/modules/auth/services/auth.service';
 
 @Injectable()
 export class CreateUserService {
   constructor(
     @InjectDataSource(ConnectionTypeEnum.DEFAULT)
     private readonly dataSource: DataSource,
+    private readonly authService: AuthService,
   ) {}
 
-  public async create(dto: CreateUserDto): Promise<CreateUserDto> {
+  public async create(
+    dto: CreateUserDto,
+  ): Promise<{ user: CreateUserDto; access_token: string }> {
     await this.validateUserExistence(dto.cpf, dto.email);
 
     const createdUser = await this.insertUser(dto);
 
-    return CreateUserDto.fromEntity(createdUser);
+    const access_token = this.generateAccessToken(createdUser);
+
+    return {
+      user: CreateUserDto.fromEntity(createdUser),
+      access_token,
+    };
   }
 
   private async validateUserExistence(cpf: string, email: string) {
@@ -57,15 +66,16 @@ export class CreateUserService {
       await this.dataSource.query(
         `
       INSERT 
-        INTO "users" (name, email, password, cpf, "createdAt", "createdFunctionName")
+        INTO "users" (name, email, password, cpf, phone, "createdAt", "createdFunctionName")
       VALUES 
-        ($1, $2, $3, $4, NOW(), $5)
+        ($1, $2, $3, $4, $5, NOW(), $6)
       RETURNING *;`,
         [
           dto.name,
           dto.email,
           hashedPassword,
           dto.cpf,
+          dto.phone,
           'CreateUserService.create',
         ],
       );
@@ -76,5 +86,10 @@ export class CreateUserService {
   private async hashPassword(password: string): Promise<string> {
     const saltRounds = 10;
     return await bcrypt.hash(password, saltRounds);
+  }
+
+  private generateAccessToken(user: User): string {
+    const payload = { sub: user.id, email: user.email, role: user.role };
+    return this.authService['jwtService'].sign(payload);
   }
 }

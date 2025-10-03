@@ -2,19 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, SelectQueryBuilder } from 'typeorm';
 
 import { User } from 'src/entities';
-import { ListUserResponseDto, QueryUserDto } from '../dto';
+import { GetUserResponseDto, QueryUserDto } from '../dto';
 
 @Injectable()
 export class ListUserService {
   constructor(private readonly dataSource: DataSource) {}
 
-  async list(query: QueryUserDto): Promise<ListUserResponseDto[]> {
+  async list(query: QueryUserDto): Promise<GetUserResponseDto[]> {
     const qb = this.createQueryBuilder();
     this.mapFilters(qb, query);
 
     const users = await qb.getMany();
 
-    return users.map(ListUserResponseDto.fromEntity);
+    return users.map(GetUserResponseDto.fromEntity);
   }
 
   private createQueryBuilder() {
