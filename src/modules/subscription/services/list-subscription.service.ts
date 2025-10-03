@@ -39,7 +39,8 @@ export class ListSubscriptionService {
       .createQueryBuilder('subscription')
       .leftJoinAndSelect('subscription.user', 'user')
       .leftJoinAndSelect('subscription.event', 'event')
-      .leftJoinAndSelect('subscription.category', 'category');
+      .leftJoinAndSelect('subscription.category', 'category')
+      .leftJoinAndSelect('subscription.password', 'password');
 
     if (user.role === UserRoleEnum.RUNNER) {
       queryBuilder.andWhere('user.id = :userId', { userId: user.userId });

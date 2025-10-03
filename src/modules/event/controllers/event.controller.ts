@@ -49,7 +49,6 @@ import { AuthenticatedUser } from 'src/shared/types/routes';
 @ApiTags('events')
 @ApiBearerAuth()
 @Controller('events')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class EventController {
   constructor(
     private readonly getEventService: GetEventService,
@@ -61,6 +60,7 @@ export class EventController {
   ) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoleEnum.ADMIN, UserRoleEnum.ORGANIZER)
   @EventCreateDocumentation()
   async create(
@@ -87,6 +87,7 @@ export class EventController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoleEnum.ADMIN, UserRoleEnum.ORGANIZER)
   @EventUpdateDocumentation()
   async update(
@@ -98,6 +99,7 @@ export class EventController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoleEnum.ADMIN, UserRoleEnum.ORGANIZER)
   @EventDeleteDocumentation()
   async remove(
@@ -108,6 +110,7 @@ export class EventController {
   }
 
   @Patch(':id/status')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoleEnum.ADMIN, UserRoleEnum.ORGANIZER)
   @EventChangeStatusDocumentation()
   async changeStatus(

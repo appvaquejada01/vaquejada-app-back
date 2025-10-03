@@ -10,9 +10,8 @@ import { apiRateLimiter } from './utils/middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors({ origin: 'http://localhost:8080', credentials: true });
   app.use(apiRateLimiter);
-
-  app.enableCors({ origin: 'http://localhost:8080' });
 
   const config = new DocumentBuilder()
     .setTitle('Vaquejada API')
