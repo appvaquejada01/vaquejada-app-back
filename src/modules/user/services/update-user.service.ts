@@ -1,13 +1,16 @@
+import * as bcrypt from 'bcrypt';
 import { DataSource } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 
 import { User } from 'src/entities';
 import { ConnectionTypeEnum } from 'src/utils/database';
-
-import { UpdateUserDto, UpdateUserResponseDto } from '../dto';
-import { UserNotFoundException } from '../exceptions';
+import { AuthenticatedUser } from 'src/shared/types/routes';
 import { UpdateQueryResponse } from 'src/shared/types/typeorm';
+
+import { UserRoleEnum } from '../enums';
+import { UserNotFoundException } from '../exceptions';
+import { UpdateUserDto, UpdateUserResponseDto } from '../dto';
 
 @Injectable()
 export class UpdateUserService {
@@ -19,15 +22,25 @@ export class UpdateUserService {
   public async update(
     userId: string,
     dto: UpdateUserDto,
-    requestUserId: string,
+    requestUser: AuthenticatedUser,
   ): Promise<UpdateUserResponseDto> {
     const existingUser = await this.findUserById(userId);
 
     const updatedUser = await this.updateUserInfo(
-      existingUser.id,
+      existingUser,
       dto,
-      requestUserId,
+      requestUser,
     );
+
+    if (requestUser.role === UserRoleEnum.ADMIN && dto.password) {
+      const hashedPassword = await this.hashPassword(dto.password);
+
+      await this.updatePassword(
+        existingUser.id,
+        hashedPassword,
+        requestUser.userId,
+      );
+    }
 
     return UpdateUserResponseDto.fromEntity(updatedUser);
   }
@@ -45,6 +58,7 @@ export class UpdateUserService {
         'user.city',
         'user.state',
         'user.role',
+        'user.isActive',
       ])
       .where('user.id = :userId', { userId })
       .getOne();
@@ -57,10 +71,18 @@ export class UpdateUserService {
   }
 
   private async updateUserInfo(
-    userId: string,
+    existingUser: User,
     dto: UpdateUserDto,
-    requestUserId: string,
+    requestUser: AuthenticatedUser,
   ): Promise<User> {
+    const updatedRole =
+      requestUser.role !== UserRoleEnum.ADMIN ? existingUser.role : dto.role;
+
+    const updatedIsActive =
+      requestUser.role !== UserRoleEnum.ADMIN
+        ? existingUser.isActive
+        : dto.isActive;
+
     const [[updatedUser]]: UpdateQueryResponse<User> =
       await this.dataSource.query(
         `
@@ -73,11 +95,13 @@ export class UpdateUserService {
         phone = $4,
         city = $5,
         state = $6,
+        role = $7,
+        "is_active" = $8,
         "updatedAt" = NOW(),
-        "updatedUserId" = $7,
-        "updatedFunctionName" = $8
+        "updatedUserId" = $9,
+        "updatedFunctionName" = $10
       WHERE 
-        id = $9
+        id = $11
       RETURNING
         id, name, email, cpf, nature, phone, city, state;`,
         [
@@ -87,12 +111,44 @@ export class UpdateUserService {
           dto.phone,
           dto.city,
           dto.state,
+          updatedRole,
+          updatedIsActive,
           'UpdateUserService.update',
-          requestUserId,
-          userId,
+          requestUser.userId,
+          existingUser.id,
         ],
       );
 
     return updatedUser;
+  }
+
+  private async hashPassword(password: string): Promise<string> {
+    const saltRounds = 10;
+    return await bcrypt.hash(password, saltRounds);
+  }
+
+  private async updatePassword(
+    userId: string,
+    hashedPassword: string,
+    updateUserId: string,
+  ): Promise<void> {
+    await this.dataSource.query(
+      `
+    UPDATE 
+      "users"
+    SET 
+      password = $1,
+      "updatedUserId" = $2,
+      "updatedAt" = NOW(),
+      "updatedFunctionName" = $3
+    WHERE 
+      id = $4;`,
+      [
+        hashedPassword,
+        updateUserId,
+        'UpdateUserService.updatePassword',
+        userId,
+      ],
+    );
   }
 }

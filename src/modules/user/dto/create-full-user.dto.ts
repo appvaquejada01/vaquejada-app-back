@@ -1,31 +1,36 @@
 import {
-  IsBoolean,
   IsEmail,
   IsEnum,
+  IsNotEmpty,
   IsOptional,
   IsString,
 } from 'class-validator';
-import { SanitizeNumber } from 'src/shared/decorators/sanitize-number.decorator';
 import { UserNatureEnum, UserRoleEnum } from '../enums';
+import { SanitizeNumber } from 'src/shared/decorators/sanitize-number.decorator';
 import { User } from 'src/entities';
 
-export class UpdateUserDto {
-  @IsOptional()
+export class CreateFullUserDto {
+  @IsNotEmpty()
   @IsString()
-  name?: string;
+  name: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsEmail()
-  email?: string;
+  email: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  password?: string;
+  password: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   @SanitizeNumber()
-  cpf?: string;
+  cpf: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @SanitizeNumber()
+  phone: string;
 
   @IsOptional()
   @IsEnum(UserNatureEnum)
@@ -37,11 +42,6 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
-  @SanitizeNumber()
-  phone?: string;
-
-  @IsOptional()
-  @IsString()
   city?: string;
 
   @IsOptional()
@@ -49,32 +49,20 @@ export class UpdateUserDto {
   state?: string;
 
   @IsOptional()
-  @IsBoolean()
   isActive?: boolean;
-}
 
-export class UpdateUserResponseDto {
-  id: string;
-  name: string;
-  email: string;
-  cpf: string;
-  nature: UserNatureEnum;
-  phone: string;
-  city: string;
-  state: string;
-
-  static fromEntity(user: User): UpdateUserResponseDto {
-    const dto = new UpdateUserResponseDto();
-
-    dto.id = user.id;
+  static fromEntity(user: User): CreateFullUserDto {
+    const dto = new CreateFullUserDto();
     dto.name = user.name;
     dto.email = user.email;
+    dto.password = user.password;
     dto.cpf = user.cpf;
-    dto.nature = user.nature;
     dto.phone = user.phone;
+    dto.nature = user.nature;
+    dto.role = user.role;
     dto.city = user.city;
     dto.state = user.state;
-
+    dto.isActive = user.isActive;
     return dto;
   }
 }

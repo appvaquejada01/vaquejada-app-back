@@ -32,7 +32,8 @@ export class ListUserService {
         'user.city',
         'user.state',
         'user.isActive',
-      ]);
+      ])
+      .orderBy('user.createdAt', 'DESC');
   }
 
   private mapFilters(
