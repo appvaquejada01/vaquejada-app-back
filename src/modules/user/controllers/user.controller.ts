@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 
 import { JwtAuthGuard } from 'src/shared/guards';
-import { RequestUser } from 'src/shared/decorators';
+import { RequestUser, Roles } from 'src/shared/decorators';
 import { AuthenticatedUser } from 'src/shared/types/routes';
 
 import {
@@ -26,11 +26,15 @@ import {
   ListUserService,
   CreateUserService,
   UpdateUserService,
+  CreateFullUserService,
 } from '../services';
+import { CreateFullUserDto } from '../dto/create-full-user.dto';
+import { UserRoleEnum } from '../enums';
 
 @Controller('users')
 export class UserController {
   constructor(
+    private readonly createFullUserService: CreateFullUserService,
     private readonly createUserService: CreateUserService,
     private readonly updateUserService: UpdateUserService,
     private readonly listUserService: ListUserService,
@@ -42,6 +46,16 @@ export class UserController {
     @Body() body: CreateUserDto,
   ): Promise<{ user: CreateUserDto; access_token: string }> {
     return this.createUserService.create(body);
+  }
+
+  @Post('full')
+  @UseGuards(JwtAuthGuard)
+  @Roles(UserRoleEnum.ADMIN)
+  async createFullUser(
+    @Body() body: CreateFullUserDto,
+    @RequestUser() user: AuthenticatedUser,
+  ): Promise<CreateFullUserDto> {
+    return this.createFullUserService.create(body, user);
   }
 
   @Get()
@@ -73,6 +87,6 @@ export class UserController {
     @Param('userId', new ParseUUIDPipe({ version: '4' })) userId: string,
     @Body() body: UpdateUserDto,
   ): Promise<UpdateUserResponseDto> {
-    return this.updateUserService.update(userId, body, requestUser.userId);
+    return this.updateUserService.update(userId, body, requestUser);
   }
 }
