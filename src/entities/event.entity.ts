@@ -43,6 +43,9 @@ export class Event extends AuditableAttributesWithTimeZone {
   @Column({ type: 'varchar', length: 100, nullable: true })
   city: string;
 
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  prize: string;
+
   @Column({ type: 'varchar', length: 2, nullable: true })
   state: string;
 
