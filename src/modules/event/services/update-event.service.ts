@@ -107,17 +107,18 @@ export class UpdateEventService {
         "endAt" = $3,
         "purchaseClosedAt" = $4,
         status = $5,
-        address = $6,
-        city = $7,
-        state = $8,
-        description = $9,
-        "bannerUrl" = $10,
-        is_active = $11,
-        "isPublic" = $12,
+        prize = $6,
+        address = $7,
+        city = $8,
+        state = $9,
+        description = $10,
+        "bannerUrl" = $11,
+        is_active = $12,
+        "isPublic" = $13,
         "updatedAt" = NOW(),
-        "updatedUserId" = $13
+        "updatedUserId" = $14
       WHERE 
-        id = $14 
+        id = $15 
       RETURNING *`,
         [
           updateEventDto.name,
@@ -125,6 +126,7 @@ export class UpdateEventService {
           updateEventDto.endAt,
           updateEventDto.purchaseClosedAt,
           updateEventDto.status,
+          updateEventDto.prize,
           updateEventDto.address || null,
           updateEventDto.city || null,
           updateEventDto.state || null,

@@ -8,6 +8,7 @@ export class GetEventResponseDto {
   description: string;
   address: string;
   city: string;
+  prize: string;
   state: string;
   purchaseClosedAt: string;
 
@@ -20,6 +21,7 @@ export class GetEventResponseDto {
       description: event.description,
       address: event.address,
       city: event.city,
+      prize: event.prize,
       state: event.state,
       purchaseClosedAt: event.purchaseClosedAt,
     };

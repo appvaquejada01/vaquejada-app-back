@@ -76,6 +76,7 @@ export class CreateEventService {
         "endAt", 
         "purchaseClosedAt", 
         status, 
+        prize,
         address, 
         city, 
         state, 
@@ -88,7 +89,7 @@ export class CreateEventService {
         "createdUserId",
         "createdFunctionName")
       VALUES
-        ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW(), $14, 'CreateEventService.insertEvent')
+        ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW(), $15, 'CreateEventService.insertEvent')
       RETURNING *`,
         [
           createEventDto.name,
@@ -96,6 +97,7 @@ export class CreateEventService {
           createEventDto.endAt,
           createEventDto.purchaseClosedAt,
           createEventDto.status,
+          createEventDto.prize,
           createEventDto.address || null,
           createEventDto.city || null,
           createEventDto.state || null,

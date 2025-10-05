@@ -40,7 +40,7 @@ import {
 @ApiTags('event-categories')
 @ApiBearerAuth()
 @Controller('event-categories')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(RolesGuard)
 export class EventCategoryController {
   constructor(
     private readonly createEventCategoryService: CreateEventCategoryService,
@@ -50,6 +50,7 @@ export class EventCategoryController {
   ) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @Roles(UserRoleEnum.ADMIN)
   @EventCategoryCreateDocumentation()
   async create(
@@ -79,6 +80,7 @@ export class EventCategoryController {
   }
 
   @Put(':eventCategoryId')
+  @UseGuards(JwtAuthGuard)
   @Roles(UserRoleEnum.ADMIN)
   @EventCategoryUpdateDocumentation()
   async update(

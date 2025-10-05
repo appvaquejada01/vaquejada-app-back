@@ -27,7 +27,7 @@ import {
 @ApiTags('passwords')
 @ApiBearerAuth()
 @Controller('passwords')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(RolesGuard)
 export class PasswordController {
   constructor(
     private readonly listPasswordsService: ListPasswordsService,
@@ -36,6 +36,7 @@ export class PasswordController {
   ) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @Roles(UserRoleEnum.ADMIN, UserRoleEnum.ORGANIZER)
   @PasswordCreateDocumentation()
   async create(
@@ -54,6 +55,7 @@ export class PasswordController {
   }
 
   @Post('purchase')
+  @UseGuards(JwtAuthGuard)
   @PasswordPurchaseDocumentation()
   async purchase(
     @Body() dto: PurchasePasswordDto,

@@ -1,4 +1,5 @@
 import { EventCategory } from 'src/entities/event-category.entity';
+import { CategoryResponseDto } from 'src/modules/category/dto';
 
 export class ListEventCategoryResponseDto {
   id: string;
@@ -9,7 +10,7 @@ export class ListEventCategoryResponseDto {
   currentRunners: number;
   isActive: boolean;
   eventId: string;
-  categoryId: string;
+  category: CategoryResponseDto;
 
   static fromEntity(entity: EventCategory): ListEventCategoryResponseDto {
     return {
@@ -21,7 +22,7 @@ export class ListEventCategoryResponseDto {
       currentRunners: entity.currentRunners,
       isActive: entity.isActive,
       eventId: entity.event?.id,
-      categoryId: entity.category?.id,
+      category: CategoryResponseDto.fromEntity(entity.category),
     };
   }
 }

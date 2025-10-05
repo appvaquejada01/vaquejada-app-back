@@ -9,6 +9,7 @@ export class ListEventResponseDto {
   status: EventStatusEnum;
   address: string;
   city: string;
+  prize: string;
   state: string;
   purchaseClosedAt: string;
 
@@ -20,6 +21,7 @@ export class ListEventResponseDto {
       endAt: event.endAt,
       address: event.address,
       city: event.city,
+      prize: event.prize,
       state: event.state,
       purchaseClosedAt: event.purchaseClosedAt,
       status: event.status,

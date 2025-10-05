@@ -34,6 +34,10 @@ export class CreateEventDto {
   @IsEnum(EventStatusEnum)
   status: EventStatusEnum;
 
+  @ApiProperty({ description: 'Prêmio do evento' })
+  @IsString()
+  prize: string;
+
   @ApiPropertyOptional({ description: 'Endereço do evento', maxLength: 500 })
   @IsString()
   @IsOptional()

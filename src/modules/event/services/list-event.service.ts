@@ -51,7 +51,9 @@ export class ListEventService {
         'event.description',
         'event.organizerId',
         'event.purchaseClosedAt',
-      ]);
+        'event.createdAt',
+      ])
+      .orderBy('event.createdAt', 'DESC');
 
     this.mapFilters(queryBuilder, query);
 

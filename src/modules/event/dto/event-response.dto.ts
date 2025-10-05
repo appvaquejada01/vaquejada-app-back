@@ -21,6 +21,9 @@ export class EventResponseDto {
   @ApiProperty({ enum: EventStatusEnum, description: 'Status do evento' })
   status: EventStatusEnum;
 
+  @ApiProperty({ description: 'Prêmio do evento' })
+  prize: string;
+
   @ApiPropertyOptional({ description: 'Endereço do evento' })
   address?: string;
 
@@ -63,6 +66,7 @@ export class EventResponseDto {
     response.address = entity.address;
     response.city = entity.city;
     response.state = entity.state;
+    response.prize = entity.prize;
     response.description = entity.description;
     response.bannerUrl = entity.bannerUrl;
     response.isActive = entity.isActive;
