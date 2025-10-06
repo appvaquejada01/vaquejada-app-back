@@ -5,6 +5,29 @@ export class CreateAllNewEntities1758510579277 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
+      `CREATE TABLE "users" (
+        "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+        "createdUserId" character varying(64),
+        "createdFunctionName" character varying(128) NOT NULL,
+        "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT now(),
+        "updatedUserId" character varying(64),
+        "updatedFunctionName" character varying(128),
+        "deletedAt" TIMESTAMP,
+        "deletedUserId" character varying(64),
+        "deletedFunctionName" character varying(128),
+        "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+        "name" character varying(200) NOT NULL,
+        "email" character varying(200) NOT NULL,
+        "cpf" character varying(14),
+        "phone" character varying(20),
+        "password" character varying(200) NOT NULL,
+        "role" character varying(50) NOT NULL,
+        "isActive" boolean NOT NULL DEFAULT true,
+        CONSTRAINT "UQ_users_email" UNIQUE ("email"),
+        CONSTRAINT "PK_users_id" PRIMARY KEY ("id")
+      )`,
+    );
+    await queryRunner.query(
       `CREATE TABLE "event_categories" ("createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "createdUserId" character varying(64), "createdFunctionName" character varying(128) NOT NULL, "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT now(), "updatedUserId" character varying(64), "updatedFunctionName" character varying(128), "deletedAt" TIMESTAMP, "deletedUserId" character varying(64), "deletedFunctionName" character varying(128), "id" uuid NOT NULL DEFAULT uuid_generate_v4(), "price" numeric(10,2) NOT NULL, "startAt" TIMESTAMP WITH TIME ZONE NOT NULL, "endAt" TIMESTAMP WITH TIME ZONE NOT NULL, "maxRunners" integer NOT NULL, "currentRunners" integer NOT NULL DEFAULT '0', "isActive" boolean NOT NULL DEFAULT true, "eventId" uuid, "categoryId" uuid, CONSTRAINT "PK_a6368447a61afbf9def09fd81af" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
@@ -123,5 +146,6 @@ export class CreateAllNewEntities1758510579277 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE "events"`);
     await queryRunner.query(`DROP TABLE "categories"`);
     await queryRunner.query(`DROP TABLE "event_categories"`);
+    await queryRunner.query(`DROP TABLE "users"`);
   }
 }

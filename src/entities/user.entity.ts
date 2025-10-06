@@ -45,7 +45,7 @@ export class User extends AuditableAttributesWithTimeZone {
   @Column({ type: 'varchar', nullable: true, length: 2 })
   state: string;
 
-  @Column({ type: 'boolean', default: true, name: 'is_active' })
+  @Column({ type: 'boolean', default: true })
   isActive: boolean;
 
   @OneToMany(() => Event, (event) => event.organizer)
