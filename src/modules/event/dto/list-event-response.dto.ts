@@ -1,4 +1,4 @@
-import { Event } from 'src/entities/event.entity';
+import { Event } from 'src/entities';
 import { EventStatusEnum } from '../enums';
 
 export class ListEventResponseDto {

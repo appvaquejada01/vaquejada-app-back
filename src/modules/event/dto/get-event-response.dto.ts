@@ -1,4 +1,4 @@
-import { Event } from 'src/entities/event.entity';
+import { Event } from 'src/entities';
 
 export class GetEventResponseDto {
   id: string;

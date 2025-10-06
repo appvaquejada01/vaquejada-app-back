@@ -2,7 +2,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-import { Event } from 'src/entities/event.entity';
+import { Event } from 'src/entities';
 
 import { EventResponseDto } from '../dto/event-response.dto';
 

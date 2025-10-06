@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 
-import { Event } from 'src/entities/event.entity';
+import { Event } from 'src/entities';
 import { PaginatedResponseDto } from 'src/shared/dto';
 
 import { ListEventResponseDto, QueryListEventDto } from '../dto';
