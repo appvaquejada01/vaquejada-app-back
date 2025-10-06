@@ -22,6 +22,9 @@ export class CreateAllNewEntities1758510579277 implements MigrationInterface {
         "phone" character varying(20),
         "password" character varying(200) NOT NULL,
         "role" character varying(50) NOT NULL,
+        "nature" character varying(50),
+        "city" character varying(100),
+        "state" character varying(2),
         "isActive" boolean NOT NULL DEFAULT true,
         CONSTRAINT "UQ_users_email" UNIQUE ("email"),
         CONSTRAINT "PK_users_id" PRIMARY KEY ("id")
