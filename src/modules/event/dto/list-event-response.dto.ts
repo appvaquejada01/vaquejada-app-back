@@ -7,6 +7,7 @@ export class ListEventResponseDto {
   startAt: string;
   endAt: string;
   status: EventStatusEnum;
+  description: string;
   address: string;
   city: string;
   prize: string;
@@ -20,6 +21,7 @@ export class ListEventResponseDto {
       startAt: event.startAt,
       endAt: event.endAt,
       address: event.address,
+      description: event.description,
       city: event.city,
       prize: event.prize,
       state: event.state,

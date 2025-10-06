@@ -40,7 +40,6 @@ import {
 @ApiTags('event-categories')
 @ApiBearerAuth()
 @Controller('event-categories')
-@UseGuards(RolesGuard)
 export class EventCategoryController {
   constructor(
     private readonly createEventCategoryService: CreateEventCategoryService,
@@ -50,13 +49,14 @@ export class EventCategoryController {
   ) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
-  @Roles(UserRoleEnum.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.ORGANIZER)
   @EventCategoryCreateDocumentation()
   async create(
     @Body() dto: CreateEventCategoryDto,
     @RequestUser() user: AuthenticatedUser,
   ): Promise<EventCategoryResponseDto> {
+    console.log('Authenticated User:', user);
     return this.createEventCategoryService.create(dto, user.userId, user.role);
   }
 
@@ -80,7 +80,7 @@ export class EventCategoryController {
   }
 
   @Put(':eventCategoryId')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoleEnum.ADMIN)
   @EventCategoryUpdateDocumentation()
   async update(

@@ -42,6 +42,7 @@ export class ListEventService {
         'event.name',
         'event.startAt',
         'event.endAt',
+        'event.prize',
         'event.status',
         'event.address',
         'event.city',

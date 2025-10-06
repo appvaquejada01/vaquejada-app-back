@@ -44,11 +44,7 @@ export class UpdateEventService {
       this.validateEventDates(updateEventDto.startAt, updateEventDto.endAt);
     }
 
-    const updatedEvent = await this.updateEvent(
-      event.id,
-      updateEventDto,
-      userId,
-    );
+    const updatedEvent = await this.updateEvent(event, updateEventDto, userId);
 
     return EventResponseDto.fromEntity(updatedEvent);
   }
@@ -92,7 +88,7 @@ export class UpdateEventService {
   }
 
   private async updateEvent(
-    id: string,
+    event: Event,
     updateEventDto: UpdateEventDto,
     userId: string,
   ): Promise<Event> {
@@ -125,7 +121,7 @@ export class UpdateEventService {
           updateEventDto.startAt,
           updateEventDto.endAt,
           updateEventDto.purchaseClosedAt,
-          updateEventDto.status,
+          updateEventDto.status ? updateEventDto.status : event.status,
           updateEventDto.prize,
           updateEventDto.address || null,
           updateEventDto.city || null,
@@ -139,7 +135,7 @@ export class UpdateEventService {
             ? updateEventDto.isPublic
             : false,
           userId,
-          id,
+          event.id,
         ],
       );
 
