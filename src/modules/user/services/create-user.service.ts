@@ -13,6 +13,7 @@ import {
 } from '../exceptions';
 import { CreateUserDto } from '../dto';
 import { AuthService } from 'src/modules/auth/services/auth.service';
+import { UserRoleEnum } from '../enums';
 
 @Injectable()
 export class CreateUserService {
@@ -66,9 +67,9 @@ export class CreateUserService {
       await this.dataSource.query(
         `
       INSERT 
-        INTO "users" (name, email, password, cpf, phone, "createdAt", "createdFunctionName")
+        INTO "users" (name, email, password, cpf, phone, role, "createdAt", "createdFunctionName")
       VALUES 
-        ($1, $2, $3, $4, $5, NOW(), $6)
+        ($1, $2, $3, $4, $5, $6, NOW(), $7)
       RETURNING *;`,
         [
           dto.name,
@@ -76,6 +77,7 @@ export class CreateUserService {
           hashedPassword,
           dto.cpf,
           dto.phone,
+          UserRoleEnum.RUNNER,
           'CreateUserService.create',
         ],
       );
