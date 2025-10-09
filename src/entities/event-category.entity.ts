@@ -29,6 +29,9 @@ export class EventCategory extends AuditableAttributesWithTimeZone {
   @Column({ type: 'int', default: 0 })
   currentRunners: number; // Competidores inscritos
 
+  @Column({ type: 'int', default: 0 })
+  passwordLimit: number; // Limite de senha para categoria
+
   @Column({ type: 'boolean', default: true })
   isActive: boolean; // Se a categoria está ativa no evento
 

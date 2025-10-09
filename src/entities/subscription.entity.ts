@@ -37,11 +37,8 @@ export class Subscription extends AuditableAttributesWithTimeZone {
   @Column()
   categoryId: string;
 
-  @ManyToOne(() => Password, (password) => password.subscriptions)
-  password: Password;
-
-  @Column()
-  passwordId: string;
+  @OneToMany(() => Password, (password) => password.subscription)
+  passwords: Password[];
 
   @OneToMany(() => Score, (score) => score.subscription)
   scores: Score[];

@@ -42,8 +42,13 @@ export class Password extends AuditableAttributesWithTimeZone {
   @Column()
   categoryId: string;
 
-  @OneToMany(() => Subscription, (subscription) => subscription.password)
-  subscriptions: Subscription[];
+  @ManyToOne(() => Subscription, (subscription) => subscription.passwords, {
+    nullable: true,
+  })
+  subscription: Subscription;
+
+  @Column({ nullable: true })
+  subscriptionId: string;
 
   @Column({ type: 'timestamp', nullable: true })
   soldAt: Date;
