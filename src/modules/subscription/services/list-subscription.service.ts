@@ -40,7 +40,7 @@ export class ListSubscriptionService {
       .leftJoinAndSelect('subscription.user', 'user')
       .leftJoinAndSelect('subscription.event', 'event')
       .leftJoinAndSelect('subscription.category', 'category')
-      .leftJoinAndSelect('subscription.password', 'password');
+      .leftJoinAndSelect('subscription.passwords', 'password');
 
     if (user.role === UserRoleEnum.RUNNER) {
       queryBuilder.andWhere('user.id = :userId', { userId: user.userId });

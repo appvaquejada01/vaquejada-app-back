@@ -23,6 +23,6 @@ const services = Object.values(Services);
   ],
   controllers: [PasswordController],
   providers: [...services],
-  exports: [],
+  exports: [Services.CreatePasswordService, Services.RemovePasswordsService],
 })
 export class PasswordModule {}

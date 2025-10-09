@@ -60,7 +60,7 @@ export class PasswordController {
   async purchase(
     @Body() dto: PurchasePasswordDto,
     @RequestUser() user: AuthenticatedUser,
-  ): Promise<PasswordDto> {
+  ): Promise<PasswordDto[]> {
     return this.purchasePasswordService.purchase(dto, user.userId);
   }
 }

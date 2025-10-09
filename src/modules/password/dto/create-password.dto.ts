@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString, IsUUID } from 'class-validator';
+import { IsNumber, IsUUID } from 'class-validator';
 
 export class CreatePasswordDto {
   @ApiProperty({ description: 'ID do evento' })

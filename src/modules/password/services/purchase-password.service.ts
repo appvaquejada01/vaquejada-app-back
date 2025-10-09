@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateQueryResponse } from 'src/shared/types/typeorm';
 import { SubscriptionStatus } from 'src/modules/subscription/enum';
 import { Event, Category, Password, Subscription } from 'src/entities';
+import { In } from 'typeorm';
 
 import { PasswordStatusEnum } from '../enums';
 import { PasswordDto, PurchasePasswordDto } from '../dto';
@@ -29,20 +30,25 @@ export class PurchasePasswordService {
   public async purchase(
     purchaseDto: PurchasePasswordDto,
     userId: string,
-  ): Promise<PasswordDto> {
-    const password = await this.validateEntities(purchaseDto);
+  ): Promise<PasswordDto[]> {
+    const passwords = await this.validateEntities(purchaseDto);
     await this.validateExistingSubscription(purchaseDto, userId);
 
     const subscription = await this.insertSubscription(purchaseDto, userId);
-    const updatedPassword = await this.updatePasswordStatus(password, userId);
+    const updatedPassword = await this.updateManyPasswordStatus(
+      passwords,
+      userId,
+    );
 
-    return PasswordDto.fromEntity(updatedPassword, subscription);
+    return updatedPassword.map((password) =>
+      PasswordDto.fromEntity(password, subscription),
+    );
   }
 
   private async validateEntities(
     purchaseDto: PurchasePasswordDto,
-  ): Promise<Password> {
-    const { eventId, categoryId, passwordId } = purchaseDto;
+  ): Promise<Password[]> {
+    const { eventId, categoryId, passwordIds } = purchaseDto;
 
     const event = await this.eventRepository.findOne({
       where: { id: eventId },
@@ -56,20 +62,21 @@ export class PurchasePasswordService {
 
     if (!category) throw new NotFoundException('Category not found');
 
-    const password = await this.passwordRepository.findOne({
-      where: { id: passwordId },
+    const passwords = await this.passwordRepository.find({
+      where: { id: In(passwordIds) },
     });
 
-    if (!password) throw new NotFoundException('Password not found');
+    if (passwords.length === 0)
+      throw new NotFoundException('Passwords not found');
 
-    return password;
+    return passwords;
   }
 
   private async validateExistingSubscription(
     purchaseDto: PurchasePasswordDto,
     userId: string,
   ): Promise<void> {
-    const { eventId, categoryId, passwordId } = purchaseDto;
+    const { eventId, categoryId, passwordIds } = purchaseDto;
 
     const subscription = await this.subscriptionRepository
       .createQueryBuilder('subscription')
@@ -79,12 +86,12 @@ export class PurchasePasswordService {
         'subscription.userId',
         'subscription.eventId',
         'subscription.categoryId',
-        'subscription.passwordId',
       ])
+      .leftJoin('subscription.passwords', 'password')
       .where('subscription.userId = :userId', { userId })
       .andWhere('subscription.eventId = :eventId', { eventId })
       .andWhere('subscription.categoryId = :categoryId', { categoryId })
-      .andWhere('subscription.passwordId = :passwordId', { passwordId })
+      .andWhere('password.id IN (:...passwordIds)', { passwordIds })
       .andWhere('subscription.status <> :status', {
         status: SubscriptionStatus.CANCELLED,
       })
@@ -98,14 +105,18 @@ export class PurchasePasswordService {
     purchaseDto: PurchasePasswordDto,
     userId: string,
   ): Promise<Subscription> {
-    const { eventId, categoryId, passwordId } = purchaseDto;
+    const { eventId, categoryId, passwordIds } = purchaseDto;
+
+    const passwords = await this.passwordRepository.find({
+      where: { id: In(passwordIds) },
+    });
 
     const subscription = this.subscriptionRepository.create({
       userId: userId,
       eventId: eventId,
       categoryId: categoryId,
-      passwordId: passwordId,
-      status: SubscriptionStatus.PENDING, // alterar para "confirmado" após pagamento
+      passwords: passwords,
+      status: SubscriptionStatus.CONFIRMED,
       subscribedAt: new Date(),
       createdAt: new Date(),
       createdUserId: userId,
@@ -113,6 +124,17 @@ export class PurchasePasswordService {
     });
 
     return this.subscriptionRepository.save(subscription);
+  }
+
+  private async updateManyPasswordStatus(
+    passwords: Password[],
+    userId: string,
+  ): Promise<Password[]> {
+    const promises = passwords.map((password) =>
+      this.updatePasswordStatus(password, userId),
+    );
+
+    return Promise.all(promises);
   }
 
   private async updatePasswordStatus(

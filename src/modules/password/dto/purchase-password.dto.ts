@@ -10,7 +10,7 @@ export class PurchasePasswordDto {
   @IsUUID()
   categoryId: string;
 
-  @ApiProperty()
-  @IsUUID()
-  passwordId: string;
+  @ApiProperty({ type: [String] })
+  @IsUUID('4', { each: true })
+  passwordIds: string[];
 }
