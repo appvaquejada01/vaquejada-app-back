@@ -43,6 +43,7 @@ export class ListEventCategoriesService {
       .createQueryBuilder('eventCategory')
       .leftJoinAndSelect('eventCategory.category', 'category')
       .leftJoinAndSelect('eventCategory.event', 'event')
+      .leftJoinAndSelect('category.passwords', 'password')
       .where('event.id = :eventId', { eventId });
 
     return queryBuilder;

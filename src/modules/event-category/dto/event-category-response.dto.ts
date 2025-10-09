@@ -8,6 +8,7 @@ export class EventCategoryResponseDto {
   endAt: string;
   maxRunners: number;
   currentRunners: number;
+  passwordLimit: number;
   isActive: boolean;
   category: CategoryResponseDto;
   isAvailable?: boolean;

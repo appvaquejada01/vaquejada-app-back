@@ -63,22 +63,26 @@ export class UpdateEventCategoryService {
       UPDATE 
         event_categories
       SET
-        price = COALESCE($1, price),
-        "maxRunners" = COALESCE($2, "maxRunners"),
-        "currentRunners" = COALESCE($3, "currentRunners"),
-        "startAt" = COALESCE($4, "startAt"),
-        "endAt" = COALESCE($5, "endAt"),
-        "isActive" = COALESCE($6, "isActive"),
+        "categoryId" = COALESCE($1, "categoryId"),
+        price = COALESCE($2, price),
+        "maxRunners" = COALESCE($3, "maxRunners"),
+        "currentRunners" = COALESCE($4, "currentRunners"),
+        "passwordLimit" = COALESCE($5, "passwordLimit"),
+        "startAt" = COALESCE($6, "startAt"),
+        "endAt" = COALESCE($7, "endAt"),
+        "isActive" = COALESCE($8, "isActive"),
         "updatedAt" = NOW(),
-        "updatedUserId" = $7,
+        "updatedUserId" = $9,
         "updatedFunctionName" = 'UpdateEventCategoryService.updateEventCategory'
       WHERE 
-        id = $8
+        id = $10
       RETURNING *`,
         [
+          dto.categoryId,
           dto.price,
           dto.maxRunners,
           dto.currentRunners,
+          dto.passwordLimit,
           dto.startAt,
           dto.endAt,
           dto.isActive,

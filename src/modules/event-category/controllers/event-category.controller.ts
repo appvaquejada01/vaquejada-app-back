@@ -5,6 +5,7 @@ import {
   Body,
   Query,
   Param,
+  Delete,
   UseGuards,
   Controller,
   ParseUUIDPipe,
@@ -35,6 +36,7 @@ import {
   CreateEventCategoryService,
   ListEventCategoriesService,
   UpdateEventCategoryService,
+  DeleteEventCategoryService,
 } from '../services';
 
 @ApiTags('event-categories')
@@ -46,6 +48,7 @@ export class EventCategoryController {
     private readonly getEventCategoryService: GetEventCategoryService,
     private readonly listEventCategoryService: ListEventCategoriesService,
     private readonly updateEventCategoryService: UpdateEventCategoryService,
+    private readonly deleteEventCategoryService: DeleteEventCategoryService,
   ) {}
 
   @Post()
@@ -56,7 +59,6 @@ export class EventCategoryController {
     @Body() dto: CreateEventCategoryDto,
     @RequestUser() user: AuthenticatedUser,
   ): Promise<EventCategoryResponseDto> {
-    console.log('Authenticated User:', user);
     return this.createEventCategoryService.create(dto, user.userId, user.role);
   }
 
@@ -81,7 +83,7 @@ export class EventCategoryController {
 
   @Put(':eventCategoryId')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRoleEnum.ADMIN)
+  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.ORGANIZER)
   @EventCategoryUpdateDocumentation()
   async update(
     @Param('eventCategoryId', new ParseUUIDPipe({ version: '4' }))
@@ -94,6 +96,22 @@ export class EventCategoryController {
       dto,
       user.userId,
       user.role,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.ORGANIZER)
+  @Delete(':eventCategoryId/:eventId')
+  async remove(
+    @Param('eventCategoryId', new ParseUUIDPipe({ version: '4' }))
+    eventCategoryId: string,
+    @Param('eventId', new ParseUUIDPipe({ version: '4' })) eventId: string,
+    @RequestUser() user: AuthenticatedUser,
+  ): Promise<void> {
+    await this.deleteEventCategoryService.execute(
+      eventId,
+      eventCategoryId,
+      user,
     );
   }
 }

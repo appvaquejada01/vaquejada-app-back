@@ -7,7 +7,8 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { EventCategory } from 'src/entities';
-import { UserRoleEnum } from 'src/modules/user/enums';
+import { AuthenticatedUser } from 'src/shared/types/routes';
+import { RemovePasswordsService } from 'src/modules/password/services';
 
 import { EventCategoryValidationService } from './event-category-validation.service';
 
@@ -17,19 +18,19 @@ export class DeleteEventCategoryService {
     @InjectRepository(EventCategory)
     private readonly eventCategoryRepository: Repository<EventCategory>,
     private readonly validationService: EventCategoryValidationService,
+    private readonly removePasswordsService: RemovePasswordsService,
   ) {}
 
   async execute(
     eventId: string,
     eventCategoryId: string,
-    userId: string,
-    userRole: UserRoleEnum,
+    user: AuthenticatedUser,
   ): Promise<void> {
     try {
       const event = await this.validationService.validateEvent(
         eventId,
-        userId,
-        userRole,
+        user.userId,
+        user.role,
       );
       this.validationService.validateEventStatusForModification(event);
 
@@ -42,6 +43,7 @@ export class DeleteEventCategoryService {
       }
 
       await this.eventCategoryRepository.remove(eventCategory);
+      await this.removePasswordsService.remove(eventId, eventCategoryId);
     } catch (error) {
       throw new InternalServerErrorException(
         'Erro ao remover categoria do evento',

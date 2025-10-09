@@ -36,6 +36,21 @@ export class CreateEventCategoryDto {
   @IsPositive()
   maxRunners: number;
 
+  @ApiProperty({ description: 'Limite de senhas da categoria' })
+  @IsInt()
+  @IsPositive()
+  passwordLimit: number;
+
+  @ApiProperty({ description: 'Senha inicial da categoria' })
+  @IsInt()
+  @IsPositive()
+  initialPassword: number;
+
+  @ApiProperty({ description: 'Senha final da categoria' })
+  @IsInt()
+  @IsPositive()
+  finalPassword: number;
+
   @ApiProperty({
     description: 'Categoria está ativa',
     required: false,

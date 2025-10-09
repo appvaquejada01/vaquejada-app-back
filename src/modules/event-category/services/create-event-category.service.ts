@@ -4,7 +4,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { EventCategory } from 'src/entities';
 import { UserRoleEnum } from 'src/modules/user/enums';
+import { CreatePasswordDto } from 'src/modules/password/dto';
 import { InsertQueryResponse } from 'src/shared/types/typeorm';
+import { CreatePasswordService } from 'src/modules/password/services';
 
 import { CreateEventCategoryDto, EventCategoryResponseDto } from '../dto';
 import { EventCategoryValidationService } from './event-category-validation.service';
@@ -15,6 +17,7 @@ export class CreateEventCategoryService {
     @InjectRepository(EventCategory)
     private readonly eventCategoryRepository: Repository<EventCategory>,
     private readonly validationService: EventCategoryValidationService,
+    private readonly createPasswordService: CreatePasswordService,
   ) {}
 
   async create(
@@ -47,8 +50,10 @@ export class CreateEventCategoryService {
 
     const createdCategory = await this.eventCategoryRepository.findOne({
       where: { id: eventCategory.id },
-      relations: ['category'],
+      relations: ['category', 'event'],
     });
+
+    await this.createPasswordsForCategory(createdCategory!, dto, userId);
 
     return EventCategoryResponseDto.fromEntity(createdCategory!);
   }
@@ -64,10 +69,11 @@ export class CreateEventCategoryService {
         event_categories 
         ("eventId", 
         "categoryId", 
-         price, 
+        price, 
         "startAt", 
         "endAt", 
-        "maxRunners", 
+        "maxRunners",
+        "passwordLimit",
         "isActive", 
         "currentRunners", 
         "createdAt", 
@@ -75,7 +81,7 @@ export class CreateEventCategoryService {
         "createdFunctionName"
       )
       VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, NOW(), $9, $10
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), $10, $11
       )
       RETURNING *`,
         [
@@ -85,6 +91,7 @@ export class CreateEventCategoryService {
           dto.startAt,
           dto.endAt,
           dto.maxRunners,
+          dto.passwordLimit,
           dto.isActive ?? true,
           0,
           userId,
@@ -93,5 +100,21 @@ export class CreateEventCategoryService {
       );
 
     return eventCategory;
+  }
+
+  private async createPasswordsForCategory(
+    eventCategory: EventCategory,
+    createEventCategoryDto: CreateEventCategoryDto,
+    userId: string,
+  ): Promise<void> {
+    const dto: CreatePasswordDto = {
+      eventId: eventCategory.event.id,
+      categoryId: eventCategory.category.id,
+      price: eventCategory.price,
+      initialPassword: createEventCategoryDto.initialPassword,
+      finalPassword: createEventCategoryDto.finalPassword,
+    };
+
+    await this.createPasswordService.create(dto, userId);
   }
 }

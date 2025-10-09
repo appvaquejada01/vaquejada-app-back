@@ -13,6 +13,10 @@ export class UpdateEventCategoryDto {
   @IsUUID()
   eventId: string;
 
+  @ApiProperty({ description: 'ID da categoria' })
+  @IsUUID()
+  categoryId: string;
+
   @IsOptional()
   @IsNumber()
   price?: number;
@@ -32,6 +36,10 @@ export class UpdateEventCategoryDto {
   @IsOptional()
   @IsInt()
   currentRunners?: number;
+
+  @IsOptional()
+  @IsInt()
+  passwordLimit?: number;
 
   @IsOptional()
   @IsBoolean()
