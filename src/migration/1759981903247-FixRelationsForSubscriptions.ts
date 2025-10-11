@@ -16,7 +16,7 @@ export class FixRelationsForSubscriptions1759981903247
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `ALTER TABLE "passwords" DROP CONSTRAINT "FK_d111b7cae1da28781b7fe1675d1"`,
+      `ALTER TABLE "passwords" DROP CONSTRAINT IF EXISTS "FK_d111b7cae1da28781b7fe1675d1"`,
     );
     await queryRunner.query(
       `ALTER TABLE "passwords" DROP COLUMN "subscriptionId"`,
