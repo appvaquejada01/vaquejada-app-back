@@ -4,9 +4,11 @@ services:
     runtime: node
     plan: free
     buildCommand: |
-      npm install -g yarn
-      yarn install --frozen-lockfile
-      yarn build
+      npm config set registry https://registry.npmjs.org/
+      npm config set //registry.npmjs.org/:_authToken ""
+      npm cache clean --force
+      npm install
+      npm run build
     startCommand: npm run start:prod
     envVars:
       - key: NODE_ENV
