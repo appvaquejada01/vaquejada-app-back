@@ -8,8 +8,9 @@ services:
       NODE_ENV=development 
       yarn install
       yarn build
-      yarn migrate
-    startCommand: yarn run start:prod
+    startCommand: |
+      yarn run migrate
+      yarn run start:prod
     envVars:
       - key: NODE_ENV
         value: production
