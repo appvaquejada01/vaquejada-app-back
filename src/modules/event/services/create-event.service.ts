@@ -4,6 +4,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 
 import { Event } from 'src/entities';
 import { InsertQueryResponse } from 'src/shared/types/typeorm';
+import { CloudinaryService } from 'src/modules/cloudinary/cloudinary.service';
 
 import { CreateEventDto, CreateEventResponseDto } from '../dto';
 
@@ -12,17 +13,27 @@ export class CreateEventService {
   constructor(
     @InjectRepository(Event)
     private readonly eventRepository: Repository<Event>,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async create(
     createEventDto: CreateEventDto,
     organizerId: string,
+    bannerFile?: Express.Multer.File,
   ): Promise<CreateEventResponseDto> {
     this.validateEventDates(
       createEventDto.startAt,
       createEventDto.endAt,
       createEventDto.purchaseClosedAt,
     );
+
+    if (bannerFile) {
+      const uploadResult =
+        await this.cloudinaryService.uploadEventBanner(bannerFile);
+
+      createEventDto.bannerUrl = uploadResult.secure_url;
+      createEventDto.bannerPublicId = uploadResult.public_id;
+    }
 
     const savedEvent = await this.insertEvent(createEventDto, organizerId);
 
@@ -81,15 +92,16 @@ export class CreateEventService {
         city, 
         state, 
         description, 
-        "bannerUrl", 
         is_active, 
         "isPublic", 
         "organizerId", 
+        "bannerUrl",
+        "bannerPublicId",
         "createdAt", 
         "createdUserId",
         "createdFunctionName")
       VALUES
-        ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW(), $15, 'CreateEventService.insertEvent')
+        ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, NOW(), $16, 'CreateEventService.insertEvent')
       RETURNING *`,
         [
           createEventDto.name,
@@ -102,10 +114,11 @@ export class CreateEventService {
           createEventDto.city || null,
           createEventDto.state || null,
           createEventDto.description,
-          createEventDto.bannerUrl || null,
           true,
-          createEventDto.isPublic || false,
+          createEventDto.isPublic === 'true' ? true : false,
           organizerId,
+          createEventDto.bannerUrl || null,
+          createEventDto.bannerPublicId || null,
           organizerId,
         ],
       );

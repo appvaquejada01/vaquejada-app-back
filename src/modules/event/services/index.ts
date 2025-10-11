@@ -4,3 +4,4 @@ export * from './list-event.service';
 export * from './update-event.service';
 export * from './delete-event.service';
 export * from './update-event-status.service';
+export * from './upload-event-banner.service';

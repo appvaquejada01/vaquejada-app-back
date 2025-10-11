@@ -15,3 +15,9 @@ export const appConfig = {
   port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
   env: process.env.NODE_ENV || 'development',
 };
+
+export const cloudinaryConfig = {
+  cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+  apiKey: process.env.CLOUDINARY_API_KEY,
+  apiSecret: process.env.CLOUDINARY_API_SECRET,
+};

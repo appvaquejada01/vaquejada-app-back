@@ -13,6 +13,7 @@ export class ListEventResponseDto {
   prize: string;
   state: string;
   purchaseClosedAt: string;
+  bannerUrl: string;
 
   static fromEntity(event: Event): ListEventResponseDto {
     return {
@@ -27,6 +28,7 @@ export class ListEventResponseDto {
       state: event.state,
       purchaseClosedAt: event.purchaseClosedAt,
       status: event.status,
+      bannerUrl: event.bannerUrl,
     };
   }
 }

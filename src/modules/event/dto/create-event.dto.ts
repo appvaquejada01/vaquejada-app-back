@@ -1,14 +1,14 @@
 import {
-  IsString,
-  IsDateString,
-  IsBoolean,
-  IsOptional,
-  IsUrl,
   IsEnum,
+  IsString,
   MinLength,
   MaxLength,
+  IsBoolean,
+  IsOptional,
+  IsDateString,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+
 import { EventStatusEnum } from '../enums/event-status.enum';
 
 export class CreateEventDto {
@@ -61,13 +61,19 @@ export class CreateEventDto {
   @MaxLength(1000)
   description: string;
 
-  @ApiPropertyOptional({ description: 'URL do banner do evento' })
-  @IsUrl()
-  @IsOptional()
-  bannerUrl?: string;
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    description: 'Banner do evento',
+    required: false,
+  })
+  banner?: any;
 
   @ApiPropertyOptional({ description: 'Se o evento é público' })
-  @IsBoolean()
+  @IsString()
   @IsOptional()
-  isPublic?: boolean;
+  isPublic?: string;
+
+  bannerUrl?: string;
+  bannerPublicId?: string;
 }

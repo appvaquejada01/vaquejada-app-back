@@ -1,6 +1,5 @@
 import {
   Get,
-  Req,
   Put,
   Post,
   Body,
@@ -8,15 +7,24 @@ import {
   Query,
   Patch,
   Delete,
+  UsePipes,
   UseGuards,
   Controller,
+  UploadedFile,
+  ParseFilePipe,
   ParseUUIDPipe,
+  ValidationPipe,
+  UseInterceptors,
+  FileTypeValidator,
+  MaxFileSizeValidator,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
 
-import { RequestUser, Roles } from 'src/shared/decorators';
 import { UserRoleEnum } from 'src/modules/user/enums';
 import { PaginatedResponseDto } from 'src/shared/dto';
+import { RequestUser, Roles } from 'src/shared/decorators';
+import { AuthenticatedUser } from 'src/shared/types/routes';
 import { JwtAuthGuard, RolesGuard } from 'src/shared/guards';
 
 import {
@@ -26,25 +34,29 @@ import {
   CreateEventService,
   DeleteEventService,
   UpdateEventStatusService,
+  UploadEventBannerService,
 } from '../services';
 import {
   CreateEventDto,
-  CreateEventResponseDto,
-  EventResponseDto,
-  ListEventResponseDto,
-  QueryListEventDto,
   UpdateEventDto,
+  EventResponseDto,
+  QueryListEventDto,
+  ListEventResponseDto,
+  CreateEventResponseDto,
 } from '../dto';
 import {
-  EventChangeStatusDocumentation,
   EventCreateDocumentation,
+  EventUpdateDocumentation,
   EventDeleteDocumentation,
   EventFindAllDocumentation,
   EventFindOneDocumentation,
-  EventUpdateDocumentation,
+  EventChangeStatusDocumentation,
 } from '../docs';
+import {
+  UploadBannerDto,
+  UploadBannerResponseDto,
+} from '../dto/upload-banner.dto';
 import { EventStatusEnum } from '../enums';
-import { AuthenticatedUser } from 'src/shared/types/routes';
 
 @ApiTags('events')
 @ApiBearerAuth()
@@ -57,6 +69,7 @@ export class EventController {
     private readonly updateEventService: UpdateEventService,
     private readonly deleteEventService: DeleteEventService,
     private readonly updateStatusService: UpdateEventStatusService,
+    private readonly uploadEventBannerService: UploadEventBannerService,
   ) {}
 
   @Post()
@@ -68,6 +81,30 @@ export class EventController {
     @RequestUser() user: AuthenticatedUser,
   ): Promise<CreateEventResponseDto> {
     return this.createEventService.create(createEventDto, user.userId);
+  }
+
+  @Post('with-banner')
+  @ApiConsumes('multipart/form-data')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.ORGANIZER)
+  @UseInterceptors(FileInterceptor('banner'))
+  @UsePipes(new ValidationPipe({ transform: true }))
+  @EventCreateDocumentation()
+  async createEventWithBanner(
+    @Body() createEventDto: CreateEventDto,
+    @RequestUser() user: AuthenticatedUser,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }), // 5MB
+          new FileTypeValidator({ fileType: /(jpg|jpeg|png|webp)$/ }),
+        ],
+        fileIsRequired: false,
+      }),
+    )
+    banner?: Express.Multer.File,
+  ): Promise<CreateEventResponseDto> {
+    return this.createEventService.create(createEventDto, user.userId, banner);
   }
 
   @Get()
@@ -119,5 +156,26 @@ export class EventController {
     @RequestUser() user: AuthenticatedUser,
   ): Promise<void> {
     return this.updateStatusService.updateStatus(id, status, user.userId);
+  }
+
+  @Post('upload-banner')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Upload de banner para evento',
+    type: UploadBannerDto,
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadBanner(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }), // 5MB
+          new FileTypeValidator({ fileType: /(jpg|jpeg|png|webp)$/ }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ): Promise<UploadBannerResponseDto> {
+    return this.uploadEventBannerService.uploadBanner(file);
   }
 }

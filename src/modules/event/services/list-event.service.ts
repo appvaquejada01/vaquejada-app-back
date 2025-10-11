@@ -53,6 +53,7 @@ export class ListEventService {
         'event.organizerId',
         'event.purchaseClosedAt',
         'event.createdAt',
+        'event.bannerUrl',
       ])
       .orderBy('event.createdAt', 'DESC');
 

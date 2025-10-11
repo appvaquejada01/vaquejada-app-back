@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 
 import {
   ConnectionTypeEnum,
@@ -9,6 +9,7 @@ import { Event } from '../../entities';
 import * as Services from './services';
 import { EventController } from './controllers';
 import { UserModule } from '../user/user.module';
+import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 
 const typeOrmEntities = [Event];
 
@@ -18,7 +19,8 @@ const services = Object.values(Services);
   imports: [
     typeOrmForFeatureToConnection(typeOrmEntities, ConnectionTypeEnum.DEFAULT),
     typeOrmForFeatureToConnection(typeOrmEntities, ConnectionTypeEnum.READONLY),
-    UserModule,
+    forwardRef(() => UserModule),
+    forwardRef(() => CloudinaryModule),
   ],
   controllers: [EventController],
   providers: [...services],
