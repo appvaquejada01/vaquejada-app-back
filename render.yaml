@@ -3,7 +3,10 @@ services:
     name: vaquejada-app
     runtime: node
     plan: free
-    buildCommand: npm install && npm run build
+    buildCommand: |
+      npm config set registry https://registry.npmjs.org/
+      npm config set //registry.npmjs.org/:_authToken ""
+      npm install && npm run build
     startCommand: npm run start:prod
     envVars:
       - key: NODE_ENV
