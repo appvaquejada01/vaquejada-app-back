@@ -21,3 +21,8 @@ export const cloudinaryConfig = {
   apiKey: process.env.CLOUDINARY_API_KEY,
   apiSecret: process.env.CLOUDINARY_API_SECRET,
 };
+
+export const prodDbConfig = {
+  type: 'postgres',
+  url: process.env.DATABASE_URL,
+};

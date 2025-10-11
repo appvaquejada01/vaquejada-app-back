@@ -1,17 +1,14 @@
 import { DataSource } from 'typeorm';
-import { dbConfig } from './env';
+import { prodDbConfig } from './env';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
-  host: dbConfig.host,
-  port: dbConfig.port,
-  username: dbConfig.username,
-  password: dbConfig.password,
-  database: dbConfig.database,
+  url: prodDbConfig.url,
   entities: ['dist/entities/**/*.js'],
   migrations: ['dist/migration/**/*.js'],
   synchronize: false,
   logging: false,
+  ssl: { rejectUnauthorized: false },
 });
 
 export const connectDatabase = async () => {

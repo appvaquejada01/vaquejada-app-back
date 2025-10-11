@@ -8,8 +8,18 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: PORT
+        value: 10000
+      - key: CLOUDINARY_CLOUD_NAME
+        value: cloud_name
+      - key: CLOUDINARY_API_KEY
+        value: cloud_key
+      - key: CLOUDINARY_API_SECRET
+        value: cloud_api
       - key: DATABASE_URL
-        value: postgresql://admin:jP2jOaRT2WY6tPMIl3qEbc9DfXYTqxek@dpg-d3l7dq3uibrs73cfgb2g-a/vaquejada
+        fromDatabase:
+          name: vaquejada
+          property: connectionString
 
 databases:
   - name: vaquejada
