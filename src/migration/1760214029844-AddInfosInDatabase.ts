@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddInfosInDatabase1760211251324 implements MigrationInterface {
-  name = 'AddInfosInDatabase1760211251324';
+export class AddInfosInDatabase1760214029844 implements MigrationInterface {
+  name = 'AddInfosInDatabase1760214029844';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`INSERT INTO 
@@ -23,5 +23,18 @@ export class AddInfosInDatabase1760211251324 implements MigrationInterface {
     `);
   }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {}
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`DELETE FROM "categories" WHERE name IN (
+      'professional', 
+      'junior', 
+      'feminine', 
+      'intermediary', 
+      'derby', 
+      'aspirant', 
+      'master', 
+      'young'
+    )`);
+
+    await queryRunner.query(`DELETE FROM "users"`);
+  }
 }
