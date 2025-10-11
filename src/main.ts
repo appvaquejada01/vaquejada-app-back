@@ -10,7 +10,16 @@ import { apiRateLimiter } from './utils/middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors({ origin: 'http://localhost:8080', credentials: true });
+  app.enableCors({
+    origin: [
+      'http://localhost:8080', // desenvolvimento local
+      'https://vaquejada-app.onrender.com', // domínio do backend
+      'https://seu-dominio-front.com', // (opcional) domínio futuro do front
+    ],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  });
   app.use(apiRateLimiter);
 
   const config = new DocumentBuilder()
