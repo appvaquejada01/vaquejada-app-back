@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: vaquejada-app
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        value: postgresql://admin:jP2jOaRT2WY6tPMIl3qEbc9DfXYTqxek@dpg-d3l7dq3uibrs73cfgb2g-a/vaquejada
+
+databases:
+  - name: vaquejada
+    plan: free
+    databaseName: vaquejada
+    user: admin
