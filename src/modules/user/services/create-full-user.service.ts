@@ -66,7 +66,7 @@ export class CreateFullUserService {
       await this.dataSource.query(
         `
       INSERT INTO 
-        "users" (name, email, password, cpf, phone, nature, role, city, state, "isActive", "createdAt", "createdFunctionName", "createdUserId")
+        "users" (name, email, password, cpf, phone, nature, role, city, state, is_active, "createdAt", "createdFunctionName", "createdUserId")
       VALUES 
         ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), $11, $12)
       RETURNING *;`,
