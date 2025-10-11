@@ -4,11 +4,11 @@ services:
     runtime: node
     plan: free
     buildCommand: |
-      npm config set registry https://registry.npmjs.org/
-      npm cache clean --force
-      NODE_ENV=development npm install
-      npm run build
-    startCommand: npm run start:prod
+      npm install -g yarn
+      NODE_ENV=development 
+      yarn install
+      yarn build
+    startCommand: yarn run start:prod
     envVars:
       - key: NODE_ENV
         value: production
