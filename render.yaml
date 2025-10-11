@@ -5,9 +5,8 @@ services:
     plan: free
     buildCommand: |
       npm config set registry https://registry.npmjs.org/
-      npm config set //registry.npmjs.org/:_authToken ""
       npm cache clean --force
-      npm install
+      NODE_ENV=development npm install
       npm run build
     startCommand: npm run start:prod
     envVars:
@@ -26,8 +25,8 @@ services:
           name: vaquejada
           property: connectionString
 
-# databases:
-#   - name: vaquejada
-#     plan: free
-#     databaseName: vaquejada
-#     user: admin
+databases:
+  - name: vaquejada
+    plan: free
+    databaseName: vaquejada
+    user: admin
