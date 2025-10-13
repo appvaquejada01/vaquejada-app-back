@@ -96,7 +96,7 @@ export class UpdateUserService {
         city = $5,
         state = $6,
         role = $7,
-        "isActive" = $8,
+        is_active = $8,
         "updatedAt" = NOW(),
         "updatedUserId" = $9,
         "updatedFunctionName" = $10
