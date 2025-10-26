@@ -51,11 +51,9 @@ export class User extends AuditableAttributesWithTimeZone {
   @OneToMany(() => Event, (event) => event.organizer)
   organizedEvents: Event[];
 
-  // RELAÇÃO COM SCORES (como juiz)
   @OneToMany(() => Score, (score) => score.judge)
   scoresGiven: Score[];
 
-  // RELAÇÃO COM EVENTOS COMO CORREDOR (N:N)
   @ManyToMany(() => Event, (event) => event.runners)
   @JoinTable({
     name: 'event_runners',
@@ -64,7 +62,6 @@ export class User extends AuditableAttributesWithTimeZone {
   })
   eventsAsRunner: Event[];
 
-  // RELAÇÃO COM EVENTOS COMO JUIZ (N:N)
   @ManyToMany(() => Event, (event) => event.judges)
   @JoinTable({
     name: 'event_judges',
@@ -73,7 +70,6 @@ export class User extends AuditableAttributesWithTimeZone {
   })
   eventsAsJudge: Event[];
 
-  // RELAÇÃO COM EVENTOS COMO LOCUTOR (N:N)
   @ManyToMany(() => Event, (event) => event.speakers)
   @JoinTable({
     name: 'event_speakers',
