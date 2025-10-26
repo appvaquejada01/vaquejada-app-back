@@ -22,6 +22,6 @@ const services = Object.values(Services);
   ],
   controllers: [SubscriptionController],
   providers: [...services],
-  exports: [],
+  exports: [TypeOrmModule],
 })
 export class SubscriptionModule {}

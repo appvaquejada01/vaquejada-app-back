@@ -5,9 +5,10 @@ import {
   ConnectionTypeEnum,
   typeOrmForFeatureToConnection,
 } from 'src/utils/database';
-import { User } from 'src/entities';
+import { Score, User } from 'src/entities';
 
 import { EventModule } from '../event/event.module';
+import { SubscriptionModule } from '../subscription/subscription.module';
 
 import { StaffController } from './controllers';
 
@@ -15,7 +16,7 @@ import * as Services from './services';
 
 const services = Object.values(Services);
 
-const typeOrmEntities = [User];
+const typeOrmEntities = [User, Score];
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ const typeOrmEntities = [User];
     typeOrmForFeatureToConnection(typeOrmEntities, ConnectionTypeEnum.READONLY),
     TypeOrmModule.forFeature([User]),
     forwardRef(() => EventModule),
+    forwardRef(() => SubscriptionModule),
   ],
   controllers: [StaffController],
   providers: [...services],

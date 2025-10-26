@@ -4,3 +4,7 @@ export * from './remove-event-judge.service';
 export * from './remove-event-speaker.service';
 export * from './get-event-staff.service';
 export * from './list-judge-events.service';
+export * from './judge-vote.service';
+export * from './list-judge-votes.service';
+export * from './update-judge-vote.service';
+export * from './list-speaker-events.service';
