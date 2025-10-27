@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
-import { Event } from 'src/entities';
+import { Event, Subscription, User } from 'src/entities';
 import { EventStatusEnum } from 'src/modules/event/enums';
 
 export class JudgeResponseDto {
@@ -13,6 +13,16 @@ export class JudgeResponseDto {
 
   @ApiProperty({ description: 'Email do juiz' })
   email?: string;
+
+  static fromEntity(judge: User): JudgeResponseDto {
+    const dto = new JudgeResponseDto();
+
+    dto.id = judge.id;
+    dto.name = judge.name;
+    dto.email = judge.email;
+
+    return dto;
+  }
 }
 
 export class PasswordResponseDto {
@@ -42,9 +52,35 @@ export class SubscriptionResponseDto {
   })
   @Type(() => PasswordResponseDto)
   passwords: PasswordResponseDto[];
+
+  static fromEntity(subscription: Subscription): SubscriptionResponseDto {
+    const dto = new SubscriptionResponseDto();
+    dto.id = subscription.id;
+    dto.createdAt = subscription.createdAt;
+    dto.status = subscription.status;
+    dto.passwords = subscription.passwords?.map((pwd) => {
+      const pwdDto = new PasswordResponseDto();
+      pwdDto.id = pwd.id;
+      pwdDto.number = Number(pwd.number);
+      pwdDto.status = pwd.status;
+      return pwdDto;
+    });
+
+    return dto;
+  }
 }
 
 export class RunnerResponseDto {
+  static fromEntity(runner: User): RunnerResponseDto {
+    const dto = new RunnerResponseDto();
+    dto.id = runner.id;
+    dto.name = runner.name;
+    dto.subscriptions = runner.subscriptions?.map(
+      SubscriptionResponseDto.fromEntity,
+    );
+
+    return dto;
+  }
   @ApiProperty({ description: 'ID do corredor' })
   id: string;
 

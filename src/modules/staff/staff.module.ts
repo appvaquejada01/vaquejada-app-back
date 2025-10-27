@@ -10,7 +10,7 @@ import { Score, User } from 'src/entities';
 import { EventModule } from '../event/event.module';
 import { SubscriptionModule } from '../subscription/subscription.module';
 
-import { StaffController } from './controllers';
+import { SpeakerVoteSummaryController, StaffController } from './controllers';
 
 import * as Services from './services';
 
@@ -26,7 +26,7 @@ const typeOrmEntities = [User, Score];
     forwardRef(() => EventModule),
     forwardRef(() => SubscriptionModule),
   ],
-  controllers: [StaffController],
+  controllers: [StaffController, SpeakerVoteSummaryController],
   providers: [...services],
   exports: [TypeOrmModule],
 })

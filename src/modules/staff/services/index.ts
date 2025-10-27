@@ -8,3 +8,4 @@ export * from './judge-vote.service';
 export * from './list-judge-votes.service';
 export * from './update-judge-vote.service';
 export * from './list-speaker-events.service';
+export * from './speaker-votes-summary.service';

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
 
-import { JudgeVote, Score } from 'src/entities';
+import { JudgeVoteEnum, Score } from 'src/entities';
 
 export class JudgeVoteDto {
   @ApiProperty()
@@ -17,8 +17,8 @@ export class JudgeVoteDto {
   passwordId: string;
 
   @ApiProperty()
-  @IsEnum(JudgeVote)
-  vote: JudgeVote;
+  @IsEnum(JudgeVoteEnum)
+  vote: JudgeVoteEnum;
 
   @ApiProperty()
   @IsOptional()
@@ -40,7 +40,7 @@ export class ListJudgeVotesResponseDto {
   passwordId: string;
 
   @ApiProperty()
-  vote: JudgeVote;
+  vote: JudgeVoteEnum;
 
   @ApiProperty()
   points: number;

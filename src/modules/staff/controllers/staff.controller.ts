@@ -1,4 +1,5 @@
 import {
+  Put,
   Get,
   Body,
   Post,
@@ -7,7 +8,6 @@ import {
   UseGuards,
   Controller,
   ParseUUIDPipe,
-  Put,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
@@ -34,10 +34,12 @@ import {
   UpdateJudgeVoteService,
   ListSpeakerEventsService,
 } from '../services';
+import { ListSpeakerEventsDto } from '../dto/list-speaker-events.dto';
 
 @ApiTags('staff')
 @ApiBearerAuth()
 @Controller('staff')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class StaffController {
   constructor(
     private readonly getStaffEventService: GetEventStaffService,
@@ -53,7 +55,6 @@ export class StaffController {
   ) {}
 
   @Post('judge/:eventId/:judgeId')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoleEnum.ADMIN, UserRoleEnum.ORGANIZER)
   async createJudge(
     @Param('eventId', new ParseUUIDPipe({ version: '4' })) eventId: string,
@@ -64,7 +65,6 @@ export class StaffController {
   }
 
   @Post('speaker/:eventId/:speakerId')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoleEnum.ADMIN, UserRoleEnum.ORGANIZER)
   async createSpeaker(
     @Param('eventId', new ParseUUIDPipe({ version: '4' })) eventId: string,
@@ -79,7 +79,6 @@ export class StaffController {
   }
 
   @Delete('judge/:eventId/:judgeId')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoleEnum.ADMIN, UserRoleEnum.ORGANIZER)
   async removeJudge(
     @Param('eventId', new ParseUUIDPipe({ version: '4' })) eventId: string,
@@ -90,7 +89,6 @@ export class StaffController {
   }
 
   @Delete('speaker/:eventId/:speakerId')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoleEnum.ADMIN, UserRoleEnum.ORGANIZER)
   async removeSpeaker(
     @Param('eventId', new ParseUUIDPipe({ version: '4' })) eventId: string,
@@ -105,7 +103,6 @@ export class StaffController {
   }
 
   @Get('event/:eventId')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoleEnum.ADMIN, UserRoleEnum.ORGANIZER)
   async getStaffEvent(
     @Param('eventId', new ParseUUIDPipe({ version: '4' })) eventId: string,
@@ -114,7 +111,6 @@ export class StaffController {
   }
 
   @Get(':judgeId/events')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoleEnum.ADMIN, UserRoleEnum.JUDGE, UserRoleEnum.ORGANIZER)
   async getJudgeEvents(
     @Param('judgeId', new ParseUUIDPipe({ version: '4' })) judgeId: string,
@@ -123,7 +119,6 @@ export class StaffController {
   }
 
   @Post('judge/vote')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoleEnum.JUDGE)
   async judgeVote(
     @Body() voteDto: JudgeVoteDto,
@@ -133,7 +128,6 @@ export class StaffController {
   }
 
   @Get('judge/votes/:judgeId/:eventId')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoleEnum.JUDGE)
   async getJudgeVotes(
     @Param('judgeId', new ParseUUIDPipe({ version: '4' })) judgeId: string,
@@ -143,7 +137,6 @@ export class StaffController {
   }
 
   @Put('judge/vote/:scoreId')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoleEnum.JUDGE)
   async updateJudgeVote(
     @Param('scoreId', new ParseUUIDPipe({ version: '4' })) scoreId: string,
@@ -153,11 +146,10 @@ export class StaffController {
   }
 
   @Get('speaker/:speakerId/events')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoleEnum.ADMIN, UserRoleEnum.SPEAKER, UserRoleEnum.ORGANIZER)
   async getSpeakerEvents(
     @Param('speakerId', new ParseUUIDPipe({ version: '4' })) speakerId: string,
-  ): Promise<Event[]> {
+  ): Promise<ListSpeakerEventsDto[]> {
     return this.listSpeakerEventsService.listBySpeaker(speakerId);
   }
 }

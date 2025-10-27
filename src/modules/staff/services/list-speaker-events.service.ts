@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/entities';
 import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable, NotFoundException } from '@nestjs/common';
+
+import { User } from 'src/entities';
+import { ListSpeakerEventsDto } from '../dto';
 
 @Injectable()
 export class ListSpeakerEventsService {
@@ -10,19 +12,32 @@ export class ListSpeakerEventsService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  public async listBySpeaker(speakerId: string): Promise<Event[]> {
-    const events = await this.userRepository.findOne({
+  public async listBySpeaker(
+    speakerId: string,
+  ): Promise<ListSpeakerEventsDto[]> {
+    const user = await this.findSpeakerWithEvents(speakerId);
+
+    return user.eventsAsSpeaker.map(ListSpeakerEventsDto.fromEntity);
+  }
+
+  private async findSpeakerWithEvents(speakerId: string) {
+    const user = await this.userRepository.findOne({
       where: { id: speakerId },
       relations: [
         'eventsAsSpeaker',
+        'eventsAsSpeaker.judges',
         'eventsAsSpeaker.scores',
         'eventsAsSpeaker.runners',
         'eventsAsSpeaker.passwords',
+        'eventsAsSpeaker.runners.subscriptions',
+        'eventsAsSpeaker.runners.subscriptions.passwords',
       ],
     });
 
-    console.log(events);
+    if (!user) {
+      throw new NotFoundException('Speaker not found');
+    }
 
-    return [];
+    return user;
   }
 }
