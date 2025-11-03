@@ -11,6 +11,7 @@ import { CategoryModule } from './modules/category/category.module';
 import { PasswordModule } from './modules/password/password.module';
 import { EventCategoryModule } from './modules/event-category/event-category.module';
 import { SubscriptionModule } from './modules/subscription/subscription.module';
+import { PaymentsModule } from './modules/payments/payments.module';
 
 const imports = [
   TypeOrmModule.forRootAsync({
@@ -27,6 +28,7 @@ const imports = [
   PasswordModule,
   SubscriptionModule,
   EventCategoryModule,
+  PaymentsModule,
 ];
 
 @Module({ imports })
