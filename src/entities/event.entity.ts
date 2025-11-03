@@ -64,14 +64,12 @@ export class Event extends AuditableAttributesWithTimeZone {
   @Column({ nullable: true })
   bannerPublicId: string;
 
-  // RELAÇÃO COM ORGANIZADOR
   @ManyToOne(() => User, (user) => user.organizedEvents)
   organizer: User;
 
-  @Column() // ADD: organizerId deve ser uma coluna separada
+  @Column()
   organizerId: string;
 
-  // RELAÇÕES N:N EXISTENTES (ajustar os nomes)
   @ManyToMany(() => User, (user) => user.eventsAsRunner)
   @JoinTable({
     name: 'event_runners',

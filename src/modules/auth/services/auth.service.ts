@@ -37,7 +37,11 @@ export class AuthService {
       .where('user.email = :email', { email })
       .getOne();
 
-    const isPasswordValid = this.validatePassword(password, user!.password);
+    if (!user) {
+      throw new InvalidCredentialsException();
+    }
+
+    const isPasswordValid = this.validatePassword(password, user.password);
 
     if (user && isPasswordValid) {
       return user;

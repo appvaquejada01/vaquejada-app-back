@@ -4,7 +4,7 @@ import { Event } from './event.entity';
 import { Subscription } from './subscription.entity';
 import { AuditableAttributesWithTimeZone } from 'src/shared/entities';
 
-export enum JudgeVote {
+export enum JudgeVoteEnum {
   VALID = 'valeu_o_boi',
   NULL = 'nulo',
   TV = 'tv',
@@ -22,17 +22,20 @@ export class Score extends AuditableAttributesWithTimeZone {
   @Column()
   subscriptionId: string;
 
-  @ManyToOne(() => User) // Juiz que atribuiu a nota
+  @Column()
+  passwordId: string;
+
+  @ManyToOne(() => User)
   judge: User;
 
   @Column()
   judgeId: string;
 
   @Column({ type: 'varchar' })
-  vote: JudgeVote;
+  vote: JudgeVoteEnum;
 
   @Column({ type: 'int', nullable: true })
-  points: number; // Pontos calculados baseados no voto
+  points: number;
 
   @Column({ type: 'text', nullable: true })
   comments: string;
@@ -40,14 +43,15 @@ export class Score extends AuditableAttributesWithTimeZone {
   @ManyToOne(() => Event, (event) => event.scores)
   event: Event;
 
-  // Método para calcular pontos baseado no voto
-  calculatePoints(): void {
+  calculatePoints(vote: JudgeVoteEnum): number {
     const pointsMap = {
-      [JudgeVote.VALID]: 10,
-      [JudgeVote.NULL]: 0,
-      [JudgeVote.TV]: 0,
-      [JudgeVote.DID_NOT_RUN]: 0,
+      [JudgeVoteEnum.VALID]: 10,
+      [JudgeVoteEnum.NULL]: 0,
+      [JudgeVoteEnum.TV]: 0,
+      [JudgeVoteEnum.DID_NOT_RUN]: 0,
     };
-    this.points = pointsMap[this.vote];
+    const points = pointsMap[vote];
+
+    return points;
   }
 }

@@ -1,3 +1,4 @@
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { forwardRef, Module } from '@nestjs/common';
 
 import {
@@ -19,11 +20,12 @@ const services = Object.values(Services);
   imports: [
     typeOrmForFeatureToConnection(typeOrmEntities, ConnectionTypeEnum.DEFAULT),
     typeOrmForFeatureToConnection(typeOrmEntities, ConnectionTypeEnum.READONLY),
+    TypeOrmModule.forFeature([Event]),
     forwardRef(() => UserModule),
     forwardRef(() => CloudinaryModule),
   ],
   controllers: [EventController],
   providers: [...services],
-  exports: [],
+  exports: [TypeOrmModule],
 })
 export class EventModule {}

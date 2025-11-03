@@ -40,6 +40,8 @@ export class PurchasePasswordService {
       userId,
     );
 
+    await this.insertEventRunners(purchaseDto.eventId, userId);
+
     return updatedPassword.map((password) =>
       PasswordDto.fromEntity(password, subscription),
     );
@@ -167,5 +169,15 @@ export class PurchasePasswordService {
       );
 
     return updatedPassword;
+  }
+
+  private async insertEventRunners(
+    eventId: string,
+    userId: string,
+  ): Promise<void> {
+    await this.eventRepository.query(
+      `INSERT INTO "event_runners"("event_id", "user_id") VALUES ($1, $2)`,
+      [eventId, userId],
+    );
   }
 }
