@@ -98,8 +98,9 @@ export class PaymentsService {
         auto_return: (process.env.MP_AUTO_RETURN_MODE as 'approved' | 'all') || 'approved',
         notification_url: process.env.MP_WEBHOOK_URL,
         payment_methods: {
-          default_payment_method_id:
-            process.env.MP_DEFAULT_PAYMENT_METHOD_ID || undefined,
+          excluded_payment_methods: [],
+          excluded_payment_types: [],
+          installments: 12,
         },
         metadata: { subscriptionId: sub.id, userId, eventId, categoryId },
       },

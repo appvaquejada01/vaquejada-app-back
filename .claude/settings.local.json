@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run typeorm:*)",
+      "Bash(npm run migrate:*)",
+      "WebSearch"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

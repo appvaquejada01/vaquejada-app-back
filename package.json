@@ -23,6 +23,7 @@
     "migrate:generate": "node --require ts-node/register ./node_modules/typeorm/cli.js migration:generate -d src/config/database.ts"
   },
   "dependencies": {
+    "mercadopago": "^2.9.0",
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
     "@nestjs/jwt": "^11.0.0",
