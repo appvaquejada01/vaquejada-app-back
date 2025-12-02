@@ -26,7 +26,7 @@ export class CreateUserService {
   public async create(
     dto: CreateUserDto,
   ): Promise<{ user: CreateUserDto; access_token: string }> {
-    await this.validateUserExistence(dto.cpf, dto.email);
+    // await this.validateUserExistence(dto.cpf, dto.email);
 
     const createdUser = await this.insertUser(dto);
 
