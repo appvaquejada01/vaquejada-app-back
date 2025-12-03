@@ -17,6 +17,7 @@ import { PaymentStatusEnum } from '../enums/payment-status.enum';
 type MPClient = {
   payments: {
     create: (args: { body: any }) => Promise<any>;
+    get: (args: { id: string | number }) => Promise<any>;
   };
   preferences: {
     create: (args: { body: any }) => Promise<any>;
@@ -289,4 +290,43 @@ export class PaymentsService {
       { status, updatedAt: new Date() },
     );
   }
+
+  async processMpPaymentById(mpPaymentId: string | number) {
+    const payment = await this.mp.payments.get({ id: mpPaymentId });
+
+    const data = (payment as any).body ?? payment;
+
+    const rawStatus = String(data?.status ?? '').toLowerCase();
+    const externalRef = data?.external_reference as string | undefined;
+
+    if (!externalRef || !rawStatus) return;
+
+    if (rawStatus === 'approved') {
+      await this.markApproved(externalRef, String(data?.id ?? ''));
+      return;
+    }
+
+    type CloseStatus = 'rejected' | 'cancelled' | 'expired';
+
+    type CloseEnum =
+      | PaymentStatusEnum.REJECTED
+      | PaymentStatusEnum.CANCELLED
+      | PaymentStatusEnum.EXPIRED;
+
+    const closeMap: Record<CloseStatus, CloseEnum> = {
+      rejected: PaymentStatusEnum.REJECTED,
+      cancelled: PaymentStatusEnum.CANCELLED,
+      expired: PaymentStatusEnum.EXPIRED,
+    };
+
+    if (
+      rawStatus === 'rejected' ||
+      rawStatus === 'cancelled' ||
+      rawStatus === 'expired'
+    ) {
+      const mapped = closeMap[rawStatus];
+      await this.markClosed(externalRef, mapped);
+    }
+  }
+
 }
