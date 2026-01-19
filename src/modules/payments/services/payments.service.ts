@@ -291,40 +291,56 @@ export class PaymentsService {
   }
 
   async processMpPaymentById(mpPaymentId: string | number) {
-    const payment = await this.mp.payments.get({ id: mpPaymentId });
+    
+    try {
+      const payment = await this.mp.payments.get({ id: mpPaymentId });
+      const data = (payment as any).body ?? payment;
 
-    const data = (payment as any).body ?? payment;
+      console.log('[MP] payment summary:', {
+        id: data?.id,
+        status: data?.status,
+        external_reference: data?.external_reference,
+        live_mode: data?.live_mode,
+      });
 
-    const rawStatus = String(data?.status ?? '').toLowerCase();
-    const externalRef = data?.external_reference as string | undefined;
+      const rawStatus = String(data?.status ?? '').toLowerCase();
+      const externalRef = data?.external_reference as string | undefined;
 
-    if (!externalRef || !rawStatus) return;
+      if (!externalRef || !rawStatus) return;
 
-    if (rawStatus === 'approved') {
-      await this.markApproved(externalRef, String(data?.id ?? ''));
-      return;
-    }
+      if (rawStatus === 'approved') {
+        await this.markApproved(externalRef, String(data?.id ?? ''));
+        return;
+      }
 
-    type CloseStatus = 'rejected' | 'cancelled' | 'expired';
+      type CloseStatus = 'rejected' | 'cancelled' | 'expired';
 
-    type CloseEnum =
-      | PaymentStatusEnum.REJECTED
-      | PaymentStatusEnum.CANCELLED
-      | PaymentStatusEnum.EXPIRED;
+      type CloseEnum =
+        | PaymentStatusEnum.REJECTED
+        | PaymentStatusEnum.CANCELLED
+        | PaymentStatusEnum.EXPIRED;
 
-    const closeMap: Record<CloseStatus, CloseEnum> = {
-      rejected: PaymentStatusEnum.REJECTED,
-      cancelled: PaymentStatusEnum.CANCELLED,
-      expired: PaymentStatusEnum.EXPIRED,
-    };
+      const closeMap: Record<CloseStatus, CloseEnum> = {
+        rejected: PaymentStatusEnum.REJECTED,
+        cancelled: PaymentStatusEnum.CANCELLED,
+        expired: PaymentStatusEnum.EXPIRED,
+      };
 
-    if (
-      rawStatus === 'rejected' ||
-      rawStatus === 'cancelled' ||
-      rawStatus === 'expired'
-    ) {
-      const mapped = closeMap[rawStatus];
-      await this.markClosed(externalRef, mapped);
+      if (
+        rawStatus === 'rejected' ||
+        rawStatus === 'cancelled' ||
+        rawStatus === 'expired'
+      ) {
+        const mapped = closeMap[rawStatus];
+        await this.markClosed(externalRef, mapped);
+      }
+    } catch (e: any) {
+      console.error('[MP] payments.get ERROR:', {
+        message: e?.message,
+        status: e?.status,
+        response: e?.response?.data,
+      });
+      throw e;
     }
   }
 
