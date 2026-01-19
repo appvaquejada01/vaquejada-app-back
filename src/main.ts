@@ -28,13 +28,12 @@ async function bootstrap() {
     credentials: true,
   });
 
-  // Body parsers
-  app.use('/webhooks/mp', bodyParser.raw({ type: '*/*' }));
-  app.use(bodyParser.json({ limit: '1mb' }));
-  app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
-
   // Rate limiter
   app.use(apiRateLimiter);
+
+  // Body parsers
+  app.use(bodyParser.json({ limit: '1mb' }));
+  app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
 
   // Swagger
   const config = new DocumentBuilder()
