@@ -1,8 +1,10 @@
 if (!(global as any).crypto) {
   (global as any).crypto = require('crypto');
 }
+
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as bodyParser from 'body-parser';
 
 import { AppModule } from './app.module';
 import { appConfig } from './config/env';
@@ -10,6 +12,8 @@ import { apiRateLimiter } from './utils/middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // CORS
   app.enableCors({
     origin: [
       'http://localhost:8080', // desenvolvimento local
@@ -20,8 +24,15 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   });
+
+  // Rate limiter
   app.use(apiRateLimiter);
 
+  // Body parsers
+  app.use(bodyParser.json({ limit: '1mb' }));
+  app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
+
+  // Swagger
   const config = new DocumentBuilder()
     .setTitle('Vaquejada API')
     .setDescription('Documentação das rotas da API Vaquejada')

@@ -8,29 +8,36 @@ export class WebhookController {
 
   @Post()
   async handle(@Req() req: Request, @Res() res: Response) {
+    const body: any = req.body ?? {};
+    const query: any = req.query ?? {};
+
+    const type = body?.type || body?.topic || query?.type || query?.topic;
+    const action = body?.action || query?.action;
+
+    const paymentId =
+      body?.data?.id ??
+      body?.id ??
+      query?.data?.id ??
+      query?.id ??
+      (typeof body?.resource === 'string'
+        ? body.resource.split('/').pop()
+        : undefined);
+
+    console.log('[MP WEBHOOK] headers:', req.headers);
+    console.log('[MP WEBHOOK] query:', query);
+    console.log('[MP WEBHOOK] body:', body);
+    console.log('[MP WEBHOOK] parsed:', { type, action, paymentId });
+
     try {
-      const body: any = req.body;
-
-      const type = body?.type || body?.topic;
-      const action = body?.action;
-
-      let paymentId: string | number | undefined =
-        body?.data?.id ??
-        body?.id ??
-        (typeof body?.resource === 'string'
-          ? body.resource.split('/').pop()
-          : undefined);
-
-      if (
-        (type === 'payment' || action?.startsWith('payment.')) &&
-        paymentId
-      ) {
+      if ((type === 'payment' || action?.startsWith('payment.')) && paymentId) {
         await this.paymentsService.processMpPaymentById(paymentId);
+      } else {
+        console.log('[MP WEBHOOK] ignored: missing paymentId/type');
       }
-
-      return res.status(200).send('OK');
-    } catch (e) {
-      return res.status(200).send('OK');
+    } catch (e: any) {
+      console.error('[MP WEBHOOK] ERROR processing:', e?.message || e, e?.response?.data);
     }
+
+    return res.status(200).send('OK');
   }
 }
