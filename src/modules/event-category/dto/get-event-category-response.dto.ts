@@ -7,6 +7,8 @@ export class GetEventCategoryResponseDto {
   endAt: string;
   maxRunners: number;
   currentRunners: number;
+  cattleQuantity: number;
+  prize: number;
   isActive: boolean;
   eventId: string;
   categoryId: string;
@@ -19,6 +21,8 @@ export class GetEventCategoryResponseDto {
       endAt: entity.endAt,
       maxRunners: entity.maxRunners,
       currentRunners: entity.currentRunners,
+      cattleQuantity: entity.cattleQuantity,
+      prize: entity.prize,
       isActive: entity.isActive,
       eventId: entity.event?.id,
       categoryId: entity.category?.id,

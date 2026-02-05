@@ -65,23 +65,25 @@ export class CreateEventCategoryService {
     const [eventCategory]: InsertQueryResponse<EventCategory> =
       await this.eventCategoryRepository.query(
         `
-      INSERT INTO 
-        event_categories 
-        ("eventId", 
-        "categoryId", 
-        price, 
-        "startAt", 
-        "endAt", 
+      INSERT INTO
+        event_categories
+        ("eventId",
+        "categoryId",
+        price,
+        "startAt",
+        "endAt",
         "maxRunners",
         "passwordLimit",
-        "isActive", 
-        "currentRunners", 
-        "createdAt", 
-        "createdUserId", 
+        "cattleQuantity",
+        prize,
+        "isActive",
+        "currentRunners",
+        "createdAt",
+        "createdUserId",
         "createdFunctionName"
       )
       VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), $10, $11
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), $12, $13
       )
       RETURNING *`,
         [
@@ -92,6 +94,8 @@ export class CreateEventCategoryService {
           dto.endAt,
           dto.maxRunners,
           dto.passwordLimit,
+          dto.cattleQuantity ?? 0,
+          dto.prize ?? 0,
           dto.isActive ?? true,
           0,
           userId,

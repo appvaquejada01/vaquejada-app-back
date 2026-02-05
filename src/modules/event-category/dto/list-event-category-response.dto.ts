@@ -9,6 +9,8 @@ export class ListEventCategoryResponseDto {
   maxRunners: number;
   currentRunners: number;
   passwordLimit: number;
+  cattleQuantity: number;
+  prize: number;
   initialPassword?: number;
   finalPassword?: number;
   isActive: boolean;
@@ -32,6 +34,8 @@ export class ListEventCategoryResponseDto {
       maxRunners: entity.maxRunners,
       currentRunners: entity.currentRunners,
       passwordLimit: entity.passwordLimit,
+      cattleQuantity: entity.cattleQuantity,
+      prize: entity.prize,
       initialPassword: initialPassword,
       finalPassword: finalPassword,
       isActive: entity.isActive,

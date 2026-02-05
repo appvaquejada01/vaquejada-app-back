@@ -32,6 +32,12 @@ export class EventCategory extends AuditableAttributesWithTimeZone {
   @Column({ type: 'int', default: 0 })
   passwordLimit: number; // Limite de senha para categoria
 
+  @Column({ type: 'int', default: 0 })
+  cattleQuantity: number; // Quantidade de boi por categoria
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  prize: number; // Premiação da categoria
+
   @Column({ type: 'boolean', default: true })
   isActive: boolean; // Se a categoria está ativa no evento
 
