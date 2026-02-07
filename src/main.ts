@@ -47,6 +47,5 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   await app.listen(appConfig.port);
-  console.log(`🚀 API Vaquejada rodando na porta ${appConfig.port}`);
 }
 bootstrap();

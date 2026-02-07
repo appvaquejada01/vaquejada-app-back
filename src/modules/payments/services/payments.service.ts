@@ -297,13 +297,6 @@ export class PaymentsService {
       const payment = await this.mp.payments.get({ id: mpPaymentId });
       const data = (payment as any).body ?? payment;
 
-      console.log('[MP] payment summary:', {
-        id: data?.id,
-        status: data?.status,
-        external_reference: data?.external_reference,
-        live_mode: data?.live_mode,
-      });
-
       const rawStatus = String(data?.status ?? '').toLowerCase();
       const externalRef = data?.external_reference as string | undefined;
 
