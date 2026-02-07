@@ -16,43 +16,43 @@ import { Score } from './score.entity';
 @Entity('users')
 export class User extends AuditableAttributesWithTimeZone {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ type: 'varchar', length: 100 })
-  name: string;
+  name!: string;
 
   @Column({ type: 'varchar', nullable: true })
-  nature: UserNatureEnum;
+  nature!: UserNatureEnum;
 
   @Column({ type: 'varchar', nullable: false, unique: true, length: 100 })
-  email: string;
+  email!: string;
 
   @Column({ type: 'varchar', nullable: false })
-  password: string;
+  password!: string;
 
   @Column({ type: 'varchar', nullable: true, length: 20 })
-  phone: string;
+  phone!: string;
 
   @Column({ type: 'varchar', nullable: false, unique: true })
-  cpf: string;
+  cpf!: string;
 
   @Column({ type: 'varchar', default: UserRoleEnum.USER, nullable: false })
-  role: UserRoleEnum;
+  role!: UserRoleEnum;
 
   @Column({ type: 'varchar', nullable: true })
-  city: string;
+  city!: string;
 
   @Column({ type: 'varchar', nullable: true, length: 2 })
-  state: string;
+  state!: string;
 
   @Column({ type: 'boolean', default: true, name: 'is_active' })
-  isActive: boolean;
+  isActive!: boolean;
 
   @OneToMany(() => Event, (event) => event.organizer)
-  organizedEvents: Event[];
+  organizedEvents!: Event[];
 
   @OneToMany(() => Score, (score) => score.judge)
-  scoresGiven: Score[];
+  scoresGiven!: Score[];
 
   @ManyToMany(() => Event, (event) => event.runners)
   @JoinTable({
@@ -60,7 +60,7 @@ export class User extends AuditableAttributesWithTimeZone {
     joinColumn: { name: 'user_id', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'event_id', referencedColumnName: 'id' },
   })
-  eventsAsRunner: Event[];
+  eventsAsRunner!: Event[];
 
   @ManyToMany(() => Event, (event) => event.judges)
   @JoinTable({
@@ -68,7 +68,7 @@ export class User extends AuditableAttributesWithTimeZone {
     joinColumn: { name: 'user_id', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'event_id', referencedColumnName: 'id' },
   })
-  eventsAsJudge: Event[];
+  eventsAsJudge!: Event[];
 
   @ManyToMany(() => Event, (event) => event.speakers)
   @JoinTable({
@@ -76,8 +76,8 @@ export class User extends AuditableAttributesWithTimeZone {
     joinColumn: { name: 'user_id', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'event_id', referencedColumnName: 'id' },
   })
-  eventsAsSpeaker: Event[];
+  eventsAsSpeaker!: Event[];
 
   @OneToMany(() => Subscription, (subscription) => subscription.user)
-  subscriptions: Subscription[];
+  subscriptions!: Subscription[];
 }
