@@ -23,21 +23,17 @@ export class WebhookController {
         ? body.resource.split('/').pop()
         : undefined);
 
-    console.log('[MP WEBHOOK] headers:', req.headers);
-    console.log('[MP WEBHOOK] query:', query);
-    console.log('[MP WEBHOOK] body:', body);
-    console.log('[MP WEBHOOK] parsed:', { type, action, paymentId });
-
     try {
       if ((type === 'payment' || action?.startsWith('payment.')) && paymentId) {
         await this.paymentsService.processMpPaymentById(paymentId);
-      } else {
-        console.log('[MP WEBHOOK] ignored: missing paymentId/type');
       }
     } catch (e: any) {
-      console.error('[MP WEBHOOK] ERROR processing:', e?.message || e, e?.response?.data);
+      console.error(
+        '[MP WEBHOOK] ERROR processing:',
+        e?.message || e,
+        e?.response?.data,
+      );
     }
-
     return res.status(200).send('OK');
   }
 }

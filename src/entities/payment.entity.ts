@@ -3,22 +3,22 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 @Entity('payments')
 export class Payment {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column()
-  subscriptionId: string;
+  subscriptionId!: string;
 
   @Column()
-  gateway: string;
+  gateway!: string;
 
   @Column()
-  status: string;
+  status!: string;
 
   @Column('numeric', { precision: 10, scale: 2 })
-  amount: number;
+  amount!: number;
 
   @Column({ default: 'BRL' })
-  currency: string;
+  currency!: string;
 
   @Column({ nullable: true })
   externalReference?: string;
@@ -42,7 +42,7 @@ export class Payment {
   raw?: any;
 
   @Column({ type: 'timestamptz', default: () => 'now()' })
-  createdAt: Date;
+  createdAt!: Date;
 
   @Column({ type: 'timestamptz', nullable: true })
   updatedAt?: Date;

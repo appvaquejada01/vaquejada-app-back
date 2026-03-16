@@ -17,38 +17,38 @@ import { Password } from './password.entity';
 @Entity('subscriptions')
 export class Subscription extends AuditableAttributesWithTimeZone {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @ManyToOne(() => User, (user) => user.subscriptions)
-  user: User;
+  user!: User;
 
   @Column()
-  userId: string;
+  userId!: string;
 
   @ManyToOne(() => Event, (event) => event.subscriptions)
-  event: Event;
+  event!: Event;
 
   @Column()
-  eventId: string;
+  eventId!: string;
 
   @ManyToOne(() => Category, (category) => category.subscriptions)
-  category: Category;
+  category!: Category;
 
   @Column()
-  categoryId: string;
+  categoryId!: string;
 
   @OneToMany(() => Password, (password) => password.subscription)
-  passwords: Password[];
+  passwords!: Password[];
 
   @OneToMany(() => Score, (score) => score.subscription)
-  scores: Score[];
+  scores!: Score[];
 
   @Column({ type: 'varchar', default: SubscriptionStatus.PENDING })
-  status: SubscriptionStatus;
+  status!: SubscriptionStatus;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  subscribedAt: Date;
+  subscribedAt!: Date;
 
   @Column({ type: 'timestamp', nullable: true })
-  confirmedAt: Date;
+  confirmedAt!: Date;
 }

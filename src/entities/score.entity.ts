@@ -14,34 +14,34 @@ export enum JudgeVoteEnum {
 @Entity('scores')
 export class Score extends AuditableAttributesWithTimeZone {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @ManyToOne(() => Subscription, (subscription) => subscription.scores)
-  subscription: Subscription;
+  subscription!: Subscription;
 
   @Column()
-  subscriptionId: string;
+  subscriptionId!: string;
 
   @Column()
-  passwordId: string;
+  passwordId!: string;
 
   @ManyToOne(() => User)
-  judge: User;
+  judge!: User;
 
   @Column()
-  judgeId: string;
+  judgeId!: string;
 
   @Column({ type: 'varchar' })
-  vote: JudgeVoteEnum;
+  vote!: JudgeVoteEnum;
 
   @Column({ type: 'int', nullable: true })
-  points: number;
+  points!: number;
 
   @Column({ type: 'text', nullable: true })
-  comments: string;
+  comments!: string;
 
   @ManyToOne(() => Event, (event) => event.scores)
-  event: Event;
+  event!: Event;
 
   calculatePoints(vote: JudgeVoteEnum): number {
     const pointsMap = {

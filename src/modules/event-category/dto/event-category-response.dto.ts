@@ -9,6 +9,8 @@ export class EventCategoryResponseDto {
   maxRunners: number;
   currentRunners: number;
   passwordLimit: number;
+  cattleQuantity: number;
+  prize: number;
   isActive: boolean;
   category: CategoryResponseDto;
   isAvailable?: boolean;
@@ -25,6 +27,8 @@ export class EventCategoryResponseDto {
     dto.endAt = entity.endAt;
     dto.maxRunners = entity.maxRunners;
     dto.currentRunners = entity.currentRunners;
+    dto.cattleQuantity = entity.cattleQuantity;
+    dto.prize = entity.prize;
     dto.isActive = entity.isActive;
     dto.category = CategoryResponseDto.fromEntity(entity.category);
     dto.createdAt = entity.createdAt;

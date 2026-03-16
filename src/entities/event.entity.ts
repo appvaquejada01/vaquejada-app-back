@@ -20,55 +20,55 @@ import { Password } from './password.entity';
 @Entity('events')
 export class Event extends AuditableAttributesWithTimeZone {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ type: 'varchar', length: 200 })
-  name: string;
+  name!: string;
 
   @Column({ type: 'timestamptz' })
-  startAt: string;
+  startAt!: string;
 
   @Column({ type: 'timestamptz' })
-  endAt: string;
+  endAt!: string;
 
   @Column({ type: 'timestamptz' })
-  purchaseClosedAt: string;
+  purchaseClosedAt!: string;
 
   @Column({ type: 'varchar', length: 50, nullable: false })
-  status: EventStatusEnum;
+  status!: EventStatusEnum;
 
   @Column({ type: 'varchar', length: 500, nullable: true })
-  address: string;
+  address!: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
-  city: string;
+  city!: string;
 
   @Column({ type: 'varchar', length: 500, nullable: true })
-  prize: string;
+  prize!: string;
 
   @Column({ type: 'varchar', length: 2, nullable: true })
-  state: string;
+  state!: string;
 
   @Column({ type: 'varchar', length: 1000 })
-  description: string;
+  description!: string;
 
   @Column({ type: 'varchar', length: 1000, nullable: true })
-  bannerUrl: string;
+  bannerUrl!: string;
 
   @Column({ type: 'boolean', default: true, name: 'is_active' })
-  isActive: boolean;
+  isActive!: boolean;
 
   @Column({ type: 'boolean', default: false })
-  isPublic: boolean;
+  isPublic!: boolean;
 
   @Column({ nullable: true })
-  bannerPublicId: string;
+  bannerPublicId!: string;
 
   @ManyToOne(() => User, (user) => user.organizedEvents)
-  organizer: User;
+  organizer!: User;
 
   @Column()
-  organizerId: string;
+  organizerId!: string;
 
   @ManyToMany(() => User, (user) => user.eventsAsRunner)
   @JoinTable({
@@ -76,7 +76,7 @@ export class Event extends AuditableAttributesWithTimeZone {
     joinColumn: { name: 'event_id', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'user_id', referencedColumnName: 'id' },
   })
-  runners: User[];
+  runners!: User[];
 
   @ManyToMany(() => User, (user) => user.eventsAsJudge)
   @JoinTable({
@@ -84,7 +84,7 @@ export class Event extends AuditableAttributesWithTimeZone {
     joinColumn: { name: 'event_id', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'user_id', referencedColumnName: 'id' },
   })
-  judges: User[];
+  judges!: User[];
 
   @ManyToMany(() => User, (user) => user.eventsAsSpeaker)
   @JoinTable({
@@ -92,19 +92,19 @@ export class Event extends AuditableAttributesWithTimeZone {
     joinColumn: { name: 'event_id', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'user_id', referencedColumnName: 'id' },
   })
-  speakers: User[];
+  speakers!: User[];
 
   @OneToMany(() => EventCategory, (eventCategory) => eventCategory.event)
-  eventCategories: EventCategory[];
+  eventCategories!: EventCategory[];
 
   @OneToMany(() => Password, (password) => password.event)
-  passwords: Password[];
+  passwords!: Password[];
 
   @OneToMany(() => Score, (score) => score.event)
-  scores: Score[];
+  scores!: Score[];
 
   @OneToMany(() => Subscription, (subscription) => subscription.event)
-  subscriptions: Subscription[];
+  subscriptions!: Subscription[];
 
   canPurchaseRuns(): boolean {
     return (

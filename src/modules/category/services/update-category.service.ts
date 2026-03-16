@@ -91,8 +91,6 @@ export class UpdateCategoryService {
         [name ?? null, description ?? null, id, userId],
       );
 
-    console.log(result);
-
     return result;
   }
 }

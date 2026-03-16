@@ -8,6 +8,7 @@ import {
   RunnerVoteSummaryResponse,
   SpeakerVoteSummaryResponse,
 } from '../dto';
+import { PasswordStatusEnum } from 'src/modules/password/enums';
 
 @Injectable()
 export class SpeakerVotesSummaryService {
@@ -30,6 +31,14 @@ export class SpeakerVotesSummaryService {
         'subscriptions.passwords.category',
       ],
     });
+
+    if (event) {
+      event.subscriptions = event.subscriptions.filter((subscription) =>
+        subscription.passwords.some(
+          (password) => password.status === PasswordStatusEnum.RESERVED,
+        ),
+      );
+    }
 
     if (!event) {
       throw new NotFoundException('Evento não encontrado');

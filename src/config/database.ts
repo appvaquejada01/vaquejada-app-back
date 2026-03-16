@@ -14,7 +14,6 @@ export const AppDataSource = new DataSource({
 export const connectDatabase = async () => {
   try {
     await AppDataSource.initialize();
-    console.log('✅ Conectado ao Postgres com TypeORM');
     return AppDataSource;
   } catch (error: unknown) {
     if (error instanceof Error) {

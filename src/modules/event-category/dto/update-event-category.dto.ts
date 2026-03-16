@@ -42,6 +42,14 @@ export class UpdateEventCategoryDto {
   passwordLimit?: number;
 
   @IsOptional()
+  @IsInt()
+  cattleQuantity?: number;
+
+  @IsOptional()
+  @IsNumber()
+  prize?: number;
+
+  @IsOptional()
   @IsBoolean()
   isActive?: boolean;
 }

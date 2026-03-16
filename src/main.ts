@@ -13,6 +13,9 @@ import { apiRateLimiter } from './utils/middleware';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  const expressApp = app.getHttpAdapter().getInstance();
+  expressApp.set('trust proxy', 1);
+
   // CORS
   app.enableCors({
     origin: [
@@ -44,6 +47,5 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   await app.listen(appConfig.port);
-  console.log(`🚀 API Vaquejada rodando na porta ${appConfig.port}`);
 }
 bootstrap();

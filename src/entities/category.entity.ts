@@ -10,26 +10,26 @@ import { Password } from './password.entity';
 @Entity('categories')
 export class Category extends AuditableAttributesWithTimeZone {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ type: 'varchar', length: 200, unique: true })
-  name: CategoryNameEnum;
+  name!: CategoryNameEnum;
 
   @Column({ type: 'varchar', length: 1000 })
-  description: string;
+  description!: string;
 
   @Column({ type: 'varchar', length: 1000, nullable: true })
-  rules: string;
+  rules!: string;
 
   @Column({ type: 'boolean', default: true })
-  isActive: boolean;
+  isActive!: boolean;
 
   @OneToMany(() => EventCategory, (eventCategory) => eventCategory.category)
-  eventCategories: EventCategory[];
+  eventCategories!: EventCategory[];
 
   @OneToMany(() => Password, (password) => password.category)
-  passwords: Password[];
+  passwords!: Password[];
 
   @OneToMany(() => Subscription, (subscription) => subscription.category)
-  subscriptions: Subscription[];
+  subscriptions!: Subscription[];
 }

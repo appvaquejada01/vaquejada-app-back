@@ -51,6 +51,16 @@ export class CreateEventCategoryDto {
   @IsPositive()
   finalPassword: number;
 
+  @ApiProperty({ description: 'Quantidade de boi por categoria', required: false, default: 0 })
+  @IsInt()
+  @Min(0)
+  cattleQuantity?: number;
+
+  @ApiProperty({ description: 'Premiação da categoria', required: false, default: 0 })
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0)
+  prize?: number;
+
   @ApiProperty({
     description: 'Categoria está ativa',
     required: false,

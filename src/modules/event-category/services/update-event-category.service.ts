@@ -60,7 +60,7 @@ export class UpdateEventCategoryService {
     const [[result]]: UpdateQueryResponse<EventCategory> =
       await this.eventCategoryRepository.query(
         `
-      UPDATE 
+      UPDATE
         event_categories
       SET
         "categoryId" = COALESCE($1, "categoryId"),
@@ -68,14 +68,16 @@ export class UpdateEventCategoryService {
         "maxRunners" = COALESCE($3, "maxRunners"),
         "currentRunners" = COALESCE($4, "currentRunners"),
         "passwordLimit" = COALESCE($5, "passwordLimit"),
-        "startAt" = COALESCE($6, "startAt"),
-        "endAt" = COALESCE($7, "endAt"),
-        "isActive" = COALESCE($8, "isActive"),
+        "cattleQuantity" = COALESCE($6, "cattleQuantity"),
+        prize = COALESCE($7, prize),
+        "startAt" = COALESCE($8, "startAt"),
+        "endAt" = COALESCE($9, "endAt"),
+        "isActive" = COALESCE($10, "isActive"),
         "updatedAt" = NOW(),
-        "updatedUserId" = $9,
+        "updatedUserId" = $11,
         "updatedFunctionName" = 'UpdateEventCategoryService.updateEventCategory'
-      WHERE 
-        id = $10
+      WHERE
+        id = $12
       RETURNING *`,
         [
           dto.categoryId,
@@ -83,6 +85,8 @@ export class UpdateEventCategoryService {
           dto.maxRunners,
           dto.currentRunners,
           dto.passwordLimit,
+          dto.cattleQuantity,
+          dto.prize,
           dto.startAt,
           dto.endAt,
           dto.isActive,

@@ -99,8 +99,9 @@ export class PaymentsService {
         auto_return: (process.env.MP_AUTO_RETURN_MODE as 'approved' | 'all') || 'approved',
         notification_url: process.env.MP_WEBHOOK_URL,
         payment_methods: {
-          default_payment_method_id:
-            process.env.MP_DEFAULT_PAYMENT_METHOD_ID || undefined,
+          excluded_payment_methods: [],
+          excluded_payment_types: [],
+          installments: 12,
         },
         metadata: { subscriptionId: sub.id, userId, eventId, categoryId },
       },
@@ -295,13 +296,6 @@ export class PaymentsService {
     try {
       const payment = await this.mp.payments.get({ id: mpPaymentId });
       const data = (payment as any).body ?? payment;
-
-      console.log('[MP] payment summary:', {
-        id: data?.id,
-        status: data?.status,
-        external_reference: data?.external_reference,
-        live_mode: data?.live_mode,
-      });
 
       const rawStatus = String(data?.status ?? '').toLowerCase();
       const externalRef = data?.external_reference as string | undefined;

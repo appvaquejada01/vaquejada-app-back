@@ -46,7 +46,6 @@ export class CreateEventJudgeService {
       throw new NotFoundException(`Evento não encontrado`);
     }
 
-    console.log(event);
     return event;
   }
 
