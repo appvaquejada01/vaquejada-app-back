@@ -22,6 +22,7 @@ async function bootstrap() {
       'http://localhost:8080', // desenvolvimento local
       'https://vaquejada-app.onrender.com', // domínio do backend
       'https://vaquejada-app.netlify.app', // (opcional) domínio futuro do front
+      'https://vaquejada-app-front.vercel.app', 
     ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
