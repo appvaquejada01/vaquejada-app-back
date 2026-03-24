@@ -5,9 +5,10 @@ import {
   IsNumber,
   IsBoolean,
   IsPositive,
+  IsOptional,
   IsDateString,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateEventCategoryDto {
   @ApiProperty({ description: 'ID do evento' })
@@ -41,31 +42,35 @@ export class CreateEventCategoryDto {
   @IsPositive()
   passwordLimit: number;
 
-  @ApiProperty({ description: 'Senha inicial da categoria' })
-  @IsInt()
-  @IsPositive()
-  initialPassword: number;
-
-  @ApiProperty({ description: 'Senha final da categoria' })
-  @IsInt()
-  @IsPositive()
-  finalPassword: number;
-
-  @ApiProperty({ description: 'Quantidade de boi por categoria', required: false, default: 0 })
+  @ApiPropertyOptional({ description: 'Senha inicial da categoria', default: 0 })
   @IsInt()
   @Min(0)
+  @IsOptional()
+  initialPassword?: number;
+
+  @ApiPropertyOptional({ description: 'Senha final da categoria', default: 0 })
+  @IsInt()
+  @Min(0)
+  @IsOptional()
+  finalPassword?: number;
+
+  @ApiPropertyOptional({ description: 'Quantidade de boi por categoria', default: 0 })
+  @IsInt()
+  @Min(0)
+  @IsOptional()
   cattleQuantity?: number;
 
-  @ApiProperty({ description: 'Premiação da categoria', required: false, default: 0 })
+  @ApiPropertyOptional({ description: 'Premiação da categoria', default: 0 })
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)
+  @IsOptional()
   prize?: number;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'Categoria está ativa',
-    required: false,
     default: true,
   })
   @IsBoolean()
+  @IsOptional()
   isActive?: boolean;
 }

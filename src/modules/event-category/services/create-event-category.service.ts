@@ -111,12 +111,19 @@ export class CreateEventCategoryService {
     createEventCategoryDto: CreateEventCategoryDto,
     userId: string,
   ): Promise<void> {
+    const initialPassword = createEventCategoryDto.initialPassword || 1;
+    const finalPassword = createEventCategoryDto.finalPassword || createEventCategoryDto.maxRunners || 0;
+
+    if (finalPassword <= 0) {
+      return;
+    }
+
     const dto: CreatePasswordDto = {
       eventId: eventCategory.event.id,
       categoryId: eventCategory.category.id,
       price: eventCategory.price,
-      initialPassword: createEventCategoryDto.initialPassword,
-      finalPassword: createEventCategoryDto.finalPassword,
+      initialPassword,
+      finalPassword,
     };
 
     await this.createPasswordService.create(dto, userId);
