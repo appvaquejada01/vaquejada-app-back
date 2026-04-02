@@ -35,7 +35,6 @@ export class CreatePasswordService {
 
     await this.checkExistingPasswords(dto, passwordsNumbers);
 
-    // Criar todas as senhas de uma vez
     const createdPasswords = await this.createPasswordsBatch(
       dto,
       passwordsNumbers,
@@ -143,7 +142,6 @@ export class CreatePasswordService {
     return await this.passwordRepository.save(passwordEntities);
   }
 
-  // Método auxiliar para buscar senhas de uma categoria
   public async findPasswordsByCategory(
     eventId: string,
     categoryId: string,
@@ -161,7 +159,6 @@ export class CreatePasswordService {
     return passwords.map(PasswordResponseDto.fromEntity);
   }
 
-  // Método para contar senhas por status
   public async getPasswordStats(
     eventId: string,
     categoryId: string,

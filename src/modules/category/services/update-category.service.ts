@@ -31,12 +31,10 @@ export class UpdateCategoryService {
       throw new NotFoundException(`Categoria com ID ${id} não encontrada`);
     }
 
-    // Verificar se o novo nome já existe (se foi alterado)
     if (updateCategoryDto.name && updateCategoryDto.name !== category.name) {
       await this.checkExistingCategory(updateCategoryDto.name, id);
     }
 
-    // Atualizar apenas os campos fornecidos
     const updatedCategory = await this.updateCategory(
       id,
       updateCategoryDto,

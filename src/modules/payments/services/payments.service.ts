@@ -46,10 +46,10 @@ export class PaymentsService {
 
     const passwords = await this.passRepo.find({ where: { id: In(passwordIds) } });
     if (passwords.length !== passwordIds.length) {
-      throw new NotFoundException('Passwords not found');
+      throw new NotFoundException('Senhas nao encontradas');
     }
     if (passwords.some((p) => p.status !== PasswordStatusEnum.AVAILABLE)) {
-      throw new ConflictException('Some passwords are not available');
+      throw new ConflictException('Algumas senhas nao estao disponiveis');
     }
 
     const sub = await this.subsRepo.save(
@@ -108,7 +108,6 @@ export class PaymentsService {
     });
 
 
-    // Em sandbox, priorize o sandbox_init_point.
     const initPoint = this.isSandbox ? pref?.sandbox_init_point : pref?.init_point;
     if (!initPoint) {
       throw new InternalServerErrorException(
@@ -150,10 +149,10 @@ export class PaymentsService {
 
     const passwords = await this.passRepo.find({ where: { id: In(passwordIds) } });
     if (passwords.length !== passwordIds.length) {
-      throw new NotFoundException('Passwords not found');
+      throw new NotFoundException('Senhas nao encontradas');
     }
     if (passwords.some((p) => p.status !== PasswordStatusEnum.AVAILABLE)) {
-      throw new ConflictException('Some passwords are not available');
+      throw new ConflictException('Algumas senhas nao estao disponiveis');
     }
 
     const sub = await this.subsRepo.save(
@@ -182,7 +181,6 @@ export class PaymentsService {
       .where({ id: In(passwordIds), status: PasswordStatusEnum.AVAILABLE })
       .execute();
 
-    // Em sandbox, usar credenciais TEST-... já simula Pix.
     const result = await this.mp.payments.create({
       body: {
         transaction_amount: Number(total),
@@ -329,7 +327,7 @@ export class PaymentsService {
         await this.markClosed(externalRef, mapped);
       }
     } catch (e: any) {
-      console.error('[MP] payments.get ERROR:', {
+      console.error('Erro ao consultar pagamento no MercadoPago:', {
         message: e?.message,
         status: e?.status,
         response: e?.response?.data,

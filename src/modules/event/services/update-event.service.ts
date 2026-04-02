@@ -36,10 +36,8 @@ export class UpdateEventService {
       throw new NotFoundException(`Evento com ID ${id} não encontrado`);
     }
 
-    // Verificar permissões
     await this.checkEventPermission(event, userId);
 
-    // Validar datas
     if (updateEventDto.startAt && updateEventDto.endAt) {
       this.validateEventDates(updateEventDto.startAt, updateEventDto.endAt);
     }

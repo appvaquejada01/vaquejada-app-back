@@ -13,7 +13,6 @@ export class CloudinaryService {
   async uploadEventBanner(
     file: Express.Multer.File,
   ): Promise<UploadApiResponse> {
-    // Validações do arquivo
     this.validateImageFile(file);
 
     return new Promise((resolve, reject) => {
@@ -34,7 +33,7 @@ export class CloudinaryService {
             if (error) {
               reject(
                 new InternalServerErrorException(
-                  `Upload failed: ${error.message}`,
+                  `Falha no upload: ${error.message}`,
                 ),
               );
             } else if (result) {
@@ -42,7 +41,7 @@ export class CloudinaryService {
             } else {
               reject(
                 new InternalServerErrorException(
-                  'Upload failed: No result returned from Cloudinary.',
+                  'Falha no upload: nenhum resultado retornado pelo Cloudinary.',
                 ),
               );
             }
@@ -75,7 +74,7 @@ export class CloudinaryService {
             if (error) {
               reject(
                 new InternalServerErrorException(
-                  `Upload failed: ${error.message}`,
+                  `Falha no upload: ${error.message}`,
                 ),
               );
             } else if (result) {
@@ -83,7 +82,7 @@ export class CloudinaryService {
             } else {
               reject(
                 new InternalServerErrorException(
-                  'Upload failed: No result returned from Cloudinary.',
+                  'Falha no upload: nenhum resultado retornado pelo Cloudinary.',
                 ),
               );
             }
@@ -98,7 +97,7 @@ export class CloudinaryService {
       await cloudinary.uploader.destroy(publicId);
     } catch (error) {
       throw new InternalServerErrorException(
-        `Failed to delete image: ${error.message}`,
+        `Falha ao deletar imagem: ${error.message}`,
       );
     }
   }
@@ -110,7 +109,7 @@ export class CloudinaryService {
         await this.deleteImage(publicId);
       }
     } catch (error) {
-      console.error('Error deleting image by URL:', error);
+      console.error('Erro ao deletar imagem por URL:', error);
     }
   }
 
@@ -119,7 +118,6 @@ export class CloudinaryService {
       throw new BadRequestException('Nenhum arquivo enviado');
     }
 
-    // Verificar tipo MIME
     const allowedMimeTypes = [
       'image/jpeg',
       'image/png',
@@ -132,7 +130,6 @@ export class CloudinaryService {
       );
     }
 
-    // Verificar tamanho (5MB)
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
       throw new BadRequestException(
@@ -140,7 +137,6 @@ export class CloudinaryService {
       );
     }
 
-    // Verificar se é uma imagem válida
     if (!file.buffer || file.buffer.length === 0) {
       throw new BadRequestException('Arquivo de imagem inválido');
     }

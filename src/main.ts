@@ -16,7 +16,6 @@ async function bootstrap() {
   const expressApp = app.getHttpAdapter().getInstance();
   expressApp.set('trust proxy', 1);
 
-  // CORS
   app.enableCors({
     origin: [
       'http://localhost:8080', // desenvolvimento local
@@ -29,14 +28,10 @@ async function bootstrap() {
     credentials: true,
   });
 
-  // Rate limiter
   app.use(apiRateLimiter);
-
-  // Body parsers
   app.use(bodyParser.json({ limit: '1mb' }));
   app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
 
-  // Swagger
   const config = new DocumentBuilder()
     .setTitle('Vaquejada API')
     .setDescription('Documentação das rotas da API Vaquejada')
