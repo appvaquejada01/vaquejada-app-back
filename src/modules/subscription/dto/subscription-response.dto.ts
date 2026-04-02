@@ -19,10 +19,10 @@ export class GetSubscriptionDto {
   static fromEntity(subscription: Subscription): GetSubscriptionDto {
     const dto = new GetSubscriptionDto();
 
-    const price = subscription.passwords.reduce(
-      (total, password) => total + password.price,
-      0,
-    );
+    const price = subscription.passwords.reduce((total, password) => {
+      const priceValue = parseFloat(password.price as any) || 0;
+      return total + priceValue;
+    }, 0);
 
     dto.id = subscription.id;
     dto.status = subscription.status;
@@ -53,10 +53,10 @@ export class ListSubscriptionDto {
   static fromEntity(subscription: Subscription): ListSubscriptionDto {
     const dto = new ListSubscriptionDto();
 
-    const price = subscription.passwords.reduce(
-      (total, password) => total + password.price,
-      0,
-    );
+    const price = subscription.passwords.reduce((total, password) => {
+      const priceValue = parseFloat(password.price as any) || 0;
+      return total + priceValue;
+    }, 0);
 
     dto.id = subscription.id;
     dto.status = subscription.status;
