@@ -19,9 +19,9 @@ import { JwtAuthGuard, RolesGuard } from 'src/shared/guards';
 import {
   JudgeVoteDto,
   GetEventStaffDto,
-  ListJudgeVotesResponseDto,
   ListJudgeEventsResponseDto,
 } from '../dto';
+import { SpeakerVoteSummaryResponse } from '../dto/list-vote-summary.response.dto';
 import {
   JudgeVoteService,
   GetEventStaffService,
@@ -132,7 +132,7 @@ export class StaffController {
   async getJudgeVotes(
     @Param('judgeId', new ParseUUIDPipe({ version: '4' })) judgeId: string,
     @Param('eventId', new ParseUUIDPipe({ version: '4' })) eventId: string,
-  ): Promise<ListJudgeVotesResponseDto[]> {
+  ): Promise<SpeakerVoteSummaryResponse> {
     return this.listJudgeVotesService.listVotes(judgeId, eventId);
   }
 

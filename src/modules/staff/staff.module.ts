@@ -5,7 +5,7 @@ import {
   ConnectionTypeEnum,
   typeOrmForFeatureToConnection,
 } from 'src/utils/database';
-import { Score, User } from 'src/entities';
+import { Event, Score, User } from 'src/entities';
 
 import { EventModule } from '../event/event.module';
 import { SubscriptionModule } from '../subscription/subscription.module';
@@ -16,7 +16,7 @@ import * as Services from './services';
 
 const services = Object.values(Services);
 
-const typeOrmEntities = [User, Score];
+const typeOrmEntities = [User, Score, Event];
 
 @Module({
   imports: [
