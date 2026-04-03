@@ -70,6 +70,7 @@ export class ListJudgeVotesService {
         const votes: JudgeVoteDetailResponse[] = score
           ? [
               {
+                scoreId: score.id,
                 judgeId: score.judge.id,
                 judgeName: score.judge.name,
                 vote: score.vote,

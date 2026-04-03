@@ -29,6 +29,7 @@ export interface PasswordVoteSummaryResponse {
 }
 
 export interface JudgeVoteDetailResponse {
+  scoreId: string;
   judgeId: string;
   judgeName: string;
   vote: string;
