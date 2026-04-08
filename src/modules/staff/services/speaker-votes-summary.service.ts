@@ -66,9 +66,11 @@ export class SpeakerVotesSummaryService {
         const scores = await this.scoreRepository.find({
           where: { passwordId: password.id },
           relations: ['judge'],
+          order: { createdAt: 'ASC' },
         });
 
         const votes: JudgeVoteDetailResponse[] = scores.map((s) => ({
+          scoreId: s.id,
           judgeId: s.judge.id,
           judgeName: s.judge.name,
           vote: s.vote,

@@ -15,7 +15,7 @@ import { SpeakerVoteSummaryResponse } from '../dto';
 
 @Controller('speaker/vote-summary')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRoleEnum.SPEAKER, UserRoleEnum.ADMIN, UserRoleEnum.ORGANIZER)
+@Roles(UserRoleEnum.SPEAKER, UserRoleEnum.ADMIN, UserRoleEnum.ORGANIZER, UserRoleEnum.JUDGE)
 export class SpeakerVoteSummaryController {
   constructor(
     private readonly speakerVotesSummaryService: SpeakerVotesSummaryService,

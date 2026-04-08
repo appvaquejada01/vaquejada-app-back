@@ -62,27 +62,29 @@ export class ListJudgeVotesService {
       };
 
       for (const password of passwords) {
-        const score = await this.scoreRepository.findOne({
+        const scores = await this.scoreRepository.find({
           where: { passwordId: password.id, judgeId },
           relations: ['judge'],
+          order: { createdAt: 'ASC' },
         });
 
-        const votes: JudgeVoteDetailResponse[] = score
-          ? [
-              {
-                scoreId: score.id,
-                judgeId: score.judge.id,
-                judgeName: score.judge.name,
-                vote: score.vote,
-                points: score.points,
-                comments: score.comments ?? undefined,
-                votedAt: score.createdAt,
-              },
-            ]
-          : [];
+        const votes: JudgeVoteDetailResponse[] = scores.map((score) => ({
+          scoreId: score.id,
+          judgeId: score.judge.id,
+          judgeName: score.judge.name,
+          vote: score.vote,
+          points: score.points,
+          comments: score.comments ?? undefined,
+          votedAt: score.createdAt,
+        }));
 
-        const validPoints =
-          score?.vote === JudgeVoteEnum.VALID ? (score.points ?? 0) : 0;
+        const validPoints = scores.reduce(
+          (sum, s) =>
+            s.vote === JudgeVoteEnum.VALID ? sum + (s.points ?? 0) : sum,
+          0,
+        );
+
+        const lastScore = scores.length > 0 ? scores[scores.length - 1] : null;
 
         const passwordData: PasswordVoteSummaryResponse = {
           passwordId: password.id,
@@ -97,11 +99,12 @@ export class ListJudgeVotesService {
         runnerData.passwords.push(passwordData);
         runnerData.totalPoints += validPoints;
 
-        if (score) {
-          if (score.vote === JudgeVoteEnum.VALID) runnerData.validVotes++;
-          else if (score.vote === JudgeVoteEnum.NULL) runnerData.nullVotes++;
-          else if (score.vote === JudgeVoteEnum.TV) runnerData.tvVotes++;
-          else if (score.vote === JudgeVoteEnum.DID_NOT_RUN)
+        if (lastScore) {
+          if (lastScore.vote === JudgeVoteEnum.VALID) runnerData.validVotes++;
+          else if (lastScore.vote === JudgeVoteEnum.NULL)
+            runnerData.nullVotes++;
+          else if (lastScore.vote === JudgeVoteEnum.TV) runnerData.tvVotes++;
+          else if (lastScore.vote === JudgeVoteEnum.DID_NOT_RUN)
             runnerData.didNotRunVotes++;
         }
       }
@@ -119,10 +122,10 @@ export class ListJudgeVotesService {
 
   private getPasswordStatus(votes: JudgeVoteDetailResponse[]): string {
     if (votes.length === 0) return 'Sem votos';
-    const vote = votes[0].vote;
-    if (vote === JudgeVoteEnum.DID_NOT_RUN) return 'Não correu';
-    if (vote === JudgeVoteEnum.TV) return 'TV';
-    if (vote === JudgeVoteEnum.NULL) return 'Nula';
+    const lastVote = votes[votes.length - 1].vote;
+    if (lastVote === JudgeVoteEnum.DID_NOT_RUN) return 'Aguardando novo boi';
+    if (lastVote === JudgeVoteEnum.TV) return 'TV';
+    if (lastVote === JudgeVoteEnum.NULL) return 'Nula';
     return 'Válida';
   }
 }
