@@ -60,12 +60,6 @@ export class CreateEventService {
       throw new BadRequestException('Data de início não pode ser no passado');
     }
 
-    if (purchaseCloseDate > startDate) {
-      throw new BadRequestException(
-        'Data limite de compra deve ser anterior à data de início do evento',
-      );
-    }
-
     if (purchaseCloseDate < now) {
       throw new BadRequestException(
         'Data limite de compra não pode ser no passado',

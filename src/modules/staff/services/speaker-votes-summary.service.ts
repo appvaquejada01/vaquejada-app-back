@@ -95,7 +95,6 @@ export class SpeakerVotesSummaryService {
 
         runnerData.passwords.push(passwordData);
 
-        // Acumula totais do corredor
         runnerData.totalPoints += validPoints;
         runnerData.validVotes += votes.filter(
           (v) => v.vote === JudgeVoteEnum.VALID,

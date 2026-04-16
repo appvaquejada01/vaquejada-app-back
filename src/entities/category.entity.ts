@@ -12,7 +12,7 @@ export class Category extends AuditableAttributesWithTimeZone {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ type: 'varchar', length: 200, unique: true })
+  @Column({ type: 'varchar', length: 200 })
   name!: CategoryNameEnum;
 
   @Column({ type: 'varchar', length: 1000 })
